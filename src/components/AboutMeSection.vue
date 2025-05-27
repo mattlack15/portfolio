@@ -42,11 +42,6 @@ const education = ref([
           More <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">About</span> Me
         </h2>
         <p class="text-base lg:text-lg mt-8 py-8">
-          Lorem ipsum dolor sit amet consectetur, adipisicing elit.
-          Qui facere libero cupiditate fugit minima voluptates numquam est eos voluptate saepe
-          eius amet harum provident accusamus omnis sit in cum incidunt dolorum, necessitatibus
-          illo reiciendis ipsam debitis velit! Itaque officia architecto fugit, cum dolorum eos dolore
-          quaerat quis nobis id similique!
         </p>
       </div>
     </div>

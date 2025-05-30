@@ -8,6 +8,13 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     allowedHosts: ['.local', 'localhost', 'mattlack.com'],
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        secure: false,
+      }
+    }
   },
   plugins: [
     vue(),

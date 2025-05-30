@@ -33,7 +33,7 @@ const edit = computed(() => {
 const fetchProjects = async () => {
   loading.value = true;
   try {
-    const resp = await fetch(`${API_BASE}/api/projects/list`);
+    const resp = await fetch(`/api/projects/list`);
     if (!resp.ok) throw new Error(`Failed to fetch (${resp.status})`);
     projects.value = await resp.json();
   } catch (e: any) {
@@ -68,7 +68,7 @@ const saveProject = async () => {
   };
 
   try {
-    const resp = await fetch(`${API_BASE}/api/projects/save?apiKey=123`, {
+    const resp = await fetch(`/api/projects/save?apiKey=123`, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(temp)

@@ -52,7 +52,7 @@ const fetchProject = async () => {
   if (!id) return;
   loading.value = true;
   try {
-    const response = await fetch(`${API_BASE}/api/projects/list`);
+    const response = await fetch(`/api/projects/list`);
     if (!response.ok) throw new Error('Failed to fetch');
     const data: Project[] = await response.json();
     project.value = data.find((p) => p.id === id) || null;
@@ -74,7 +74,7 @@ const toggleEdit = () => {
     if (!project.value) return;
     project.value.description = editedMarkdown.value;
     try {
-      fetch(`${API_BASE}/api/projects/save?apiKey=${props.apiKey}`, {
+      fetch(`/api/projects/save?apiKey=${props.apiKey}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(project.value),
@@ -101,7 +101,7 @@ const handleDrop = async (event: DragEvent) => {
   try {
     const formData = new FormData();
     formData.append('image', file);
-    const response = await fetch(`${API_BASE}/api/images/upload?apiKey=${props.apiKey}`, {
+    const response = await fetch(`/api/images/upload?apiKey=${props.apiKey}`, {
       method: 'POST',
       body: formData,
     });

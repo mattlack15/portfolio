@@ -29,7 +29,7 @@ const edit = computed(() => {
 
 const deleteProject = async (id: string) => {
   try {
-    const resp = await fetch(`${API_BASE}/api/projects/delete?apiKey=${props.apiKey}id=${encodeURIComponent(id)}`, {method: 'DELETE'});
+    const resp = await fetch(`/api/projects/delete?apiKey=${props.apiKey}id=${encodeURIComponent(id)}`, {method: 'DELETE'});
     if (!resp.ok) throw new Error('Failed delete');
     emits('fetch'); // Notify parent to refresh projects
   } catch (e: any) {
@@ -41,7 +41,7 @@ const removeTech = async (project: Project, tech: string) => {
   const prev = [...project.technologies];
   project.technologies = project.technologies.filter(t => t !== tech);
   try {
-    const resp = await fetch(`${API_BASE}/api/projects/save?apiKey=${props.apiKey}`, {
+    const resp = await fetch(`/api/projects/save?apiKey=${props.apiKey}`, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(project)
@@ -67,7 +67,7 @@ const addTech = async (project: Project) => {
   project.technologies.push(tech);
   newTechInputs.value[project.id] = '';
   try {
-    const resp = await fetch(`${API_BASE}/api/projects/save?apiKey=${props.apiKey}`, {
+    const resp = await fetch(`/api/projects/save?apiKey=${props.apiKey}`, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(project)
@@ -95,7 +95,7 @@ const saveBrief = async (project: Project) => {
   const prev = project.brief;
   project.brief = trimmed;
   try {
-    const resp = await fetch(`${API_BASE}/api/projects/save?apiKey=${props.apiKey}`, {
+    const resp = await fetch(`/api/projects/save?apiKey=${props.apiKey}`, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(project)
@@ -120,14 +120,14 @@ const handleDrop = async (event: DragEvent, project: Project) => {
   formData.append('id', project.id); // Not technically needed but maybe use in future?
 
   try {
-    const resp = await fetch(`${API_BASE}/api/images/upload?apiKey=${props.apiKey}`, {
+    const resp = await fetch(`/api/images/upload?apiKey=${props.apiKey}`, {
       method: 'POST',
       body: formData
     });
     if (!resp.ok) throw new Error('Image upload failed');
     project.imageId = await resp.json()
     // Update project
-    await fetch(`${API_BASE}/api/projects/save?apiKey=${props.apiKey}`, {
+    await fetch(`/api/projects/save?apiKey=${props.apiKey}`, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(project)

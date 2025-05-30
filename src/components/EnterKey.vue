@@ -22,7 +22,7 @@ const validate = async () => {
     return;
   }
   // Try it
-  const response = await fetch(`${API_BASE}/api/projects/validate-key?key=${encodeURIComponent(currInput.value)}`);
+  const response = await fetch(`/api/projects/validate-key?key=${encodeURIComponent(currInput.value)}`);
   const isValid: boolean = await response.json();
   console.log("Key validation response:", isValid);
   if (isValid) {

@@ -109,7 +109,7 @@ const handleDrop = async (event: DragEvent) => {
     const data: string = await response.json();
     const el = document.querySelector('#markdown-area') as HTMLTextAreaElement;
     const selectedStart = el.selectionStart
-    const imageMarkdown = `![${file.name}](${API_BASE}/api/images/${data})\n`;
+    const imageMarkdown = `![${file.name}](https://mattlack.com/api/images/${data})\n`;
     editedMarkdown.value = editedMarkdown.value.slice(0, selectedStart) + imageMarkdown + editedMarkdown.value.slice(el.selectionEnd);
     el.selectionStart = selectedStart + imageMarkdown.length;
     el.selectionEnd = el.selectionStart;

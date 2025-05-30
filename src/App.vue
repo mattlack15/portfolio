@@ -12,7 +12,7 @@ const key = ref<string | null>(null);
   </div>
   <div class="bg-background min-h-screen pt-32">
     <RouterView v-slot="{ Component }">
-      <component :is="Component" :api-key="key" />
+      <component v-if="Component" :is="Component" :api-key="key" />
     </RouterView>
   </div>
 </template>

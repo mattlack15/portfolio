@@ -109,7 +109,7 @@ const saveProject = async () => {
       </div>
 
       <!-- Add form card -->
-      <div v-if="props.edit && showAddForm"
+      <div v-if="edit && showAddForm"
            class="bg-surface border border-accent rounded-xl w-full sm:w-64 md:w-80 p-4 shadow-lg">
         <h3 class="text-lg font-semibold mb-3">Add Project</h3>
         <div class="space-y-3">

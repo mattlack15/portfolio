@@ -101,7 +101,7 @@ const saveProject = async () => {
 
       <!-- Add new card -->
       <div
-          v-if="props.edit && !showAddForm"
+          v-if="edit && !showAddForm"
           @click="showAddForm = true"
           class="cursor-pointer flex items-center justify-center border-2 border-dashed border-accent rounded-xl w-full sm:w-64 md:w-80 h-32 hover:bg-accent/10 transition"
       >

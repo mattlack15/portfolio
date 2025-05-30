@@ -1,5 +1,6 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import {ref, onMounted} from 'vue';
+import {Icon} from '@iconify/vue';
 
 const showSubtitle = ref(false);
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
@@ -32,8 +33,8 @@ onMounted(() => {
             </h1>
             <transition name="fade-slide" appear>
               <p
-                v-if="showSubtitle"
-                class="absolute text-neutral text-md"
+                  v-if="showSubtitle"
+                  class="absolute text-neutral text-md"
               >
                 But I'm guessing you knew that from the url...
               </p>
@@ -41,20 +42,31 @@ onMounted(() => {
           </div>
           <p class="text-gray-300 pt-8 text-center lg:text-left mx-auto max-w-xl">
             Nice to meet you! I'm an aspiring software developer with a passion for creating systems at scale.
-            I have built many projects over the years and this is my portfolio website showcasing my work. I hope you enjoy!
+            I have built many projects over the years and made this portfolio website showcasing my work. I hope you
+            enjoy!
           </p>
           <div class="flex items-center gap-3 pt-9 flex-col sm:flex-row sm:w-max sm:mx-auto lg:mx-0">
-            <button class="cursor-pointer border border-primary px-6 md:px-7 py-3 rounded-full relative group w-full sm:w-max flex justify-center items-center relative">
+            <button
+                class="cursor-pointer border border-primary px-2 md:px-7 p-2 rounded-full group w-full sm:w-max flex justify-center items-center relative">
               <span class="hover:scale-105 transition-all ease-in-out flex justify-center items-center">
                 <span class="svg-container">
-                  <svg class="download-icon" width="18" height="22" viewBox="0 0 18 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path class="download-arrow" d="M13 9L9 13L5 9M9 13V1" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                    <path d="M1 17V18C1 18.7956 1.31607 19.5587 1.87868 20.1213C2.44129 20.6839 3.20435 21 4 21H14C14.7956 21 15.5587 20.6839 16.1213 20.1213C16.6839 19.5587 17 18.7956 17 18V17" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" />
+                  <svg class="download-icon" width="18" height="22" viewBox="0 0 18 22" fill="none"
+                       xmlns="http://www.w3.org/2000/svg">
+                    <path class="download-arrow" d="M13 9L9 13L5 9M9 13V1" stroke="#f59e0b" stroke-width="2"
+                          stroke-linecap="round" stroke-linejoin="round"/>
+                    <path
+                        d="M1 17V18C1 18.7956 1.31607 19.5587 1.87868 20.1213C2.44129 20.6839 3.20435 21 4 21H14C14.7956 21 15.5587 20.6839 16.1213 20.1213C16.6839 19.5587 17 18.7956 17 18V17"
+                        stroke="#f59e0b" stroke-width="2" stroke-linecap="round"/>
                   </svg>
                   <span class="download-loader text-white hidden"></span>
                 </span>
-                <a href="/resume.pdf" download="resume.pdf" class="pl-2 text-primary">Download resume</a>
+                <a href="/resume.pdf" download="resume.pdf" class="pl-2 text-primary">Resume</a>
               </span>
+            </button>
+            <button class="h-10 cursor-pointer border border-primary rounded-full text-primary">
+              <a href="https://github.com/mattlack15" class="h-full" target="_blank" rel="noopener noreferrer">
+                <Icon icon="mdi:github" class="w-full h-full"/>
+              </a>
             </button>
           </div>
         </div>

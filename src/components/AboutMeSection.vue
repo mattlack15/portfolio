@@ -42,6 +42,9 @@ const education = ref([
           More <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">About</span> Me
         </h2>
         <p class="text-base lg:text-lg mt-8 py-8">
+          I live in Toronto and am doing a double-major in Computer Science and Mathematics at the University of Toronto.
+           My dad introduced me to programming at a young age and since then I've made hundreds of projects, ranging from Minecraft plugins to web applications and Android apps.
+           I am going to be taking the 2025-2026 school terms off to work full-time at internships so I can gain more industry experience and refine my skills.
         </p>
       </div>
     </div>

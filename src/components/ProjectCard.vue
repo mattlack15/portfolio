@@ -29,7 +29,7 @@ const edit = computed(() => {
 
 const deleteProject = async (id: string) => {
   try {
-    const resp = await fetch(`/api/projects/delete?apiKey=${props.apiKey}id=${encodeURIComponent(id)}`, {method: 'DELETE'});
+    const resp = await fetch(`/api/projects/delete?apiKey=${props.apiKey}&id=${encodeURIComponent(id)}`, {method: 'DELETE'});
     if (!resp.ok) throw new Error('Failed delete');
     emits('fetch'); // Notify parent to refresh projects
   } catch (e: any) {

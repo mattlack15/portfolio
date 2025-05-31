@@ -111,7 +111,7 @@ const handleDrop = async (event: DragEvent) => {
     const selectedStart = el.selectionStart
     const imageMarkdown = `![${file.name}](https://mattlack.com/api/images/${data})\n`;
     editedMarkdown.value = editedMarkdown.value.slice(0, selectedStart) + imageMarkdown + editedMarkdown.value.slice(el.selectionEnd);
-    el.selectionStart = selectedStart + imageMarkdown.length;
+    el.selectionStart = selectedStart + imageMarkdown.leenenngth;
     el.selectionEnd = el.selectionStart;
   } catch (e: any) {
     error.value = e.message ?? 'Image upload failed';

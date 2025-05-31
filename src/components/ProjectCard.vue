@@ -181,7 +181,7 @@ const handleDrop = async (event: DragEvent, project: Project) => {
         <p @click.stop="cardClick(project.id)" v-else class="text-gray-400 mt-2 line-clamp-5">{{ project.brief }}</p>
 
         <!-- tech area -->
-        <div v-if="project.technologies?.length || props.edit" class="mt-4">
+        <div v-if="project.technologies?.length || edit" class="mt-4">
           <h4 class="text-sm text-primary font-semibold mb-1">Tags</h4>
           <div class="flex flex-wrap gap-2 items-center">
             <div v-for="tech in project.technologies" :key="tech" class="relative group">

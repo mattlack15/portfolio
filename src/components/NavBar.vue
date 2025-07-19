@@ -5,8 +5,6 @@ import EnterKey from "@/components/EnterKey.vue";
 
 const menu = ref([
   { name: "Home", link: "/" },
-  { name: "About Me", link: "/about-me" },
-  { name: "Contact", link: "#contact" }
 ]);
 
 const props = defineProps<{

@@ -20,7 +20,7 @@ class ProjectController(
 
     @GetMapping("list")
     suspend fun list(): List<Project> {
-        return repo.findAll().toList()
+        return repo.findAll().toList().sortedBy { it.orderIndex }
     }
 
     @PostMapping("save")
@@ -36,6 +36,19 @@ class ProjectController(
     @GetMapping("validate-key")
     suspend fun validateKey(key: String): Boolean {
         return key == apiKey
+    }
+
+    @PostMapping("reorder")
+    suspend fun reorder(@RequestBody ids: List<String>) {
+        // Fetch current projects and index them by id
+        val current = repo.findAll().toList().associateBy { it.id }
+        // Update orderIndex for each id in the provided order
+        ids.forEachIndexed { index, id ->
+            val proj = current[id]
+            if (proj != null && proj.orderIndex != index) {
+                repo.save(proj.copy(orderIndex = index))
+            }
+        }
     }
 
 }

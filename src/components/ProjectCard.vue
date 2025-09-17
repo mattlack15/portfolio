@@ -19,6 +19,7 @@ const props = defineProps<{
     imageId?: string;
     brief: string;
     technologies: string[];
+    orderIndex?: number;
   };
   apiKey: string | null;
 }>();

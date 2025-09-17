@@ -11,4 +11,5 @@ data class Project(
     val brief: String,
     val description: String,
     val technologies: List<String>,
+    val orderIndex: Int = 0,
 )

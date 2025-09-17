@@ -68,7 +68,7 @@ const saveProject = async () => {
   };
 
   try {
-    const resp = await fetch(`/api/projects/save?apiKey=123`, {
+    const resp = await fetch(`/api/projects/save?apiKey=${props.apiKey}`, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(temp)

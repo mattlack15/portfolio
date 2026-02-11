@@ -2,6 +2,7 @@ package ca.mattlack.portfolio.controller
 
 import ca.mattlack.portfolio.repo.ImageRepo
 import ca.mattlack.portfolio.repo.SavedImage
+import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -33,6 +34,8 @@ class ImageController(val repo: ImageRepo) {
         if (image == null) return ResponseEntity.notFound().build<Any>()
         return ResponseEntity.ok()
             .header("Content-Type", image.contentType ?: "application/octet-stream")
+            .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"${image.id}\"")
+            .header(HttpHeaders.CACHE_CONTROL, "public, max-age=31536000, immutable")
             .body(image.data)
     }
 }

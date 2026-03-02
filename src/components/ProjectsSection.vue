@@ -141,7 +141,7 @@ const saveProject = async () => {
   <section class="text-white mt-20" id="projects">
     <div class="px-4 xl:px-16">
       <h2 class="text-4xl text-center font-bold mb-4">
-        My <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Projects</span>
+        My <span class="text-primary">Projects</span>
       </h2>
     </div>
 

@@ -131,7 +131,7 @@ onMounted(fetchProject);
       <button @click.prevent="router.back()" class="absolute top-2 -left-10 rounded-full p-1 bg-surface cursor-pointer border border-neutral">
         <Icon icon="famicons:arrow-back" class="text-neutral"/>
       </button>
-      <h1 class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
+      <h1 class="text-4xl font-bold text-primary">
         {{ project.title }}
       </h1>
 

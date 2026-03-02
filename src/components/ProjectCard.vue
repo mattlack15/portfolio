@@ -165,7 +165,7 @@ const handleDrop = async (event: DragEvent, project: Project) => {
       </template>
 
       <div class="p-4 flex flex-col">
-        <h3 @click.stop="cardClick(project.id)" class="text-lg font-semibold uppercase text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
+        <h3 @click.stop="cardClick(project.id)" class="text-lg font-semibold uppercase text-primary">
           {{ project.title }}</h3>
 
         <div  v-if="editingId === project.id" class="space-y-2 mt-2">

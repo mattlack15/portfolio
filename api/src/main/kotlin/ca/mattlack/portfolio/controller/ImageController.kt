@@ -30,8 +30,7 @@ class ImageController(val repo: ImageRepo) {
 
     @GetMapping("{id}")
     suspend fun getImage(@PathVariable("id") id: String): ResponseEntity<*> {
-        val image = repo.findById(id)
-        if (image == null) return ResponseEntity.notFound().build<Any>()
+        val image = repo.findById(id) ?: return ResponseEntity.notFound().build<Any>()
         return ResponseEntity.ok()
             .header("Content-Type", image.contentType ?: "application/octet-stream")
             .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"${image.id}\"")

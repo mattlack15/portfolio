@@ -27,7 +27,7 @@ onMounted(() => {
           <div class="text-center lg:text-left">
             <h1 class="pt-4 text-white font-bold text-4xl md:text-5xl lg:text-6xl">
               Hi, I'm
-              <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-pink-500">
+              <span class="text-primary">
                 Matt
               </span>
             </h1>
@@ -52,11 +52,11 @@ onMounted(() => {
                 <span class="svg-container">
                   <svg class="download-icon" width="18" height="22" viewBox="0 0 18 22" fill="none"
                        xmlns="http://www.w3.org/2000/svg">
-                    <path class="download-arrow" d="M13 9L9 13L5 9M9 13V1" stroke="#f59e0b" stroke-width="2"
+                    <path class="download-arrow" d="M13 9L9 13L5 9M9 13V1" stroke="#e5e5e5" stroke-width="2"
                           stroke-linecap="round" stroke-linejoin="round"/>
                     <path
                         d="M1 17V18C1 18.7956 1.31607 19.5587 1.87868 20.1213C2.44129 20.6839 3.20435 21 4 21H14C14.7956 21 15.5587 20.6839 16.1213 20.1213C16.6839 19.5587 17 18.7956 17 18V17"
-                        stroke="#f59e0b" stroke-width="2" stroke-linecap="round"/>
+                        stroke="#e5e5e5" stroke-width="2" stroke-linecap="round"/>
                   </svg>
                   <span class="download-loader text-white hidden"></span>
                 </span>

@@ -10,7 +10,7 @@ const emits = defineEmits<{
   (e: 'update'): string | null;
 }>();
 
-const currInput = ref<string>(props.apiKey);
+const currInput = ref(props.apiKey ?? '');
 
 const API_BASE = (import.meta as any).env?.VITE_API_BASE || '';
 
@@ -21,16 +21,18 @@ const validate = async () => {
     emits('update', null);
     return;
   }
-  // Try it
-  const response = await fetch(`/api/projects/validate-key?key=${encodeURIComponent(currInput.value)}`);
-  const isValid: boolean = await response.json();
-  console.log("Key validation response:", isValid);
-  if (isValid) {
-    emits('update', currInput.value);
-    return;
+  try {
+    const response = await fetch(`${API_BASE}/api/projects/validate-key?key=${encodeURIComponent(currInput.value)}`);
+    if (!response.ok) throw new Error('Key validation failed');
+    const isValid: boolean = await response.json();
+    if (isValid) {
+      emits('update', currInput.value);
+      return;
+    }
+    error.value = 'Invalid key';
+  } catch {
+    error.value = 'Could not validate the key';
   }
-  // If not valid, reset input
-  error.value = 'Invalid Key';
 }
 
 </script>

@@ -6,6 +6,9 @@ import {EditorState, Prec} from '@codemirror/state';
 import {keymap} from '@codemirror/view';
 import {indentWithTab} from '@codemirror/commands';
 import {markdown} from '@codemirror/lang-markdown';
+import {StreamLanguage} from '@codemirror/language';
+import {gas} from '@codemirror/legacy-modes/mode/gas';
+import {pioasmParser} from '@/editor/pioasm';
 import {
   autocompletion,
   CompletionContext,
@@ -22,12 +25,16 @@ const props = defineProps<{
 const emit = defineEmits<{
   (event: 'update:modelValue', value: string): void;
   (event: 'save'): void;
-  (event: 'image-drop', file: File): void;
+  (event: 'image-drop', file: File, position: number): void;
 }>();
 
 const editorHost = ref<HTMLDivElement | null>(null);
 const imageInput = ref<HTMLInputElement | null>(null);
 let editor: EditorView | null = null;
+const assemblyLanguage = StreamLanguage.define(gas);
+const pioasmLanguage = StreamLanguage.define(pioasmParser);
+const assemblyAliases = new Set(['asm', 'assembly', 'gas', 'x86asm']);
+const pioasmAliases = new Set(['pioasm', 'pio']);
 
 const words = computed(() => {
   const content = props.modelValue.trim();
@@ -119,12 +126,16 @@ const prefixLines = (prefix: string) => {
   editor.focus();
 };
 
-const insertText = (text: string) => {
+const insertText = (text: string, position?: number) => {
   if (!editor) return;
   const selection = editor.state.selection.main;
+  const insertionStart = position === undefined
+    ? selection.from
+    : Math.max(0, Math.min(position, editor.state.doc.length));
+  const insertionEnd = position === undefined ? selection.to : insertionStart;
   editor.dispatch({
-    changes: {from: selection.from, to: selection.to, insert: text},
-    selection: {anchor: selection.from + text.length},
+    changes: {from: insertionStart, to: insertionEnd, insert: text},
+    selection: {anchor: insertionStart + text.length},
     scrollIntoView: true,
   });
   editor.focus();
@@ -149,14 +160,18 @@ const handleDrop = (event: DragEvent) => {
   const file = Array.from(event.dataTransfer?.files ?? []).find((candidate) => candidate.type.startsWith('image/'));
   if (!file) return false;
   event.preventDefault();
-  emit('image-drop', file);
+  const position = editor?.posAtCoords({x: event.clientX, y: event.clientY})
+    ?? editor?.state.selection.main.from
+    ?? 0;
+  editor?.dispatch({selection: {anchor: position}, scrollIntoView: true});
+  emit('image-drop', file, position);
   return true;
 };
 
 const handleImageSelection = (event: Event) => {
   const input = event.target as HTMLInputElement;
   const file = input.files?.[0];
-  if (file) emit('image-drop', file);
+  if (file) emit('image-drop', file, editor?.state.selection.main.from ?? 0);
   input.value = '';
 };
 
@@ -178,7 +193,13 @@ onMounted(() => {
       doc: props.modelValue,
       extensions: [
         basicSetup,
-        markdown(),
+        markdown({
+          codeLanguages: (info) => {
+            const language = info.trim().toLowerCase();
+            if (pioasmAliases.has(language)) return pioasmLanguage;
+            return assemblyAliases.has(language) ? assemblyLanguage : null;
+          },
+        }),
         autocompletion({override: [completeMarkdown], activateOnTyping: true}),
         Prec.high(keymap.of([
           {key: 'Mod-s', preventDefault: true, run: () => { emit('save'); return true; }},
@@ -251,12 +272,6 @@ defineExpose({insertText, focus: () => editor?.focus()});
       </div>
     </div>
     <div ref="editorHost" class="editor-host"></div>
-    <div class="editor-hint">
-      <span>Type <kbd>/</kbd> for blocks</span>
-      <span><kbd>Tab</kbd> indents</span>
-      <span><kbd>⌘ S</kbd> saves</span>
-      <span>Drop an image to upload</span>
-    </div>
   </div>
 </template>
 
@@ -331,29 +346,9 @@ defineExpose({insertText, focus: () => editor?.focus()});
   overflow: hidden;
 }
 
-.editor-hint {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 14px;
-  border-top: 1px solid #292929;
-  padding: 7px 14px;
-  color: #737373;
-  font-size: 11px;
-}
-
-kbd {
-  border: 1px solid #404040;
-  border-bottom-width: 2px;
-  border-radius: 4px;
-  padding: 0 4px;
-  color: #a3a3a3;
-  font: inherit;
-}
-
 :deep(.cm-editor) { height: 100%; }
 
 @media (max-width: 640px) {
   .editor-meta { width: 100%; margin: 3px 2px 0; }
-  .editor-hint span:nth-last-child(-n + 2) { display: none; }
 }
 </style>

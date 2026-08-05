@@ -7,6 +7,7 @@ import hljs from 'highlight.js';
 import 'highlight.js/styles/github-dark.css';
 import {markedHighlight} from 'marked-highlight';
 import MarkdownEditor from '@/components/MarkdownEditor.vue';
+import {pioasmHighlightLanguage} from '@/editor/pioasm';
 
 const props = withDefaults(defineProps<{
   apiKey: string | null;
@@ -40,13 +41,23 @@ const markdownEditor = ref<InstanceType<typeof MarkdownEditor> | null>(null);
 let previousBodyOverflow = '';
 
 const API_BASE: string = (import.meta as any).env?.VITE_API_BASE || '';
+const highlightAliases: Record<string, string> = {
+  asm: 'x86asm',
+  assembly: 'x86asm',
+  gas: 'x86asm',
+  pio: 'pioasm',
+};
+
+hljs.registerLanguage('pioasm', pioasmHighlightLanguage);
 
 const marked = new Marked(
   markedHighlight({
     emptyLangClass: 'hljs',
     langPrefix: 'hljs language-',
     highlight(code, lang) {
-      const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+      const requestedLanguage = lang.trim().toLowerCase();
+      const aliasedLanguage = highlightAliases[requestedLanguage] || requestedLanguage;
+      const language = hljs.getLanguage(aliasedLanguage) ? aliasedLanguage : 'plaintext';
       return hljs.highlight(code, {language}).value;
     },
   }),
@@ -119,7 +130,7 @@ const saveMarkdown = async () => {
   }
 };
 
-const handleImageDrop = async (file: File) => {
+const handleImageDrop = async (file: File, position: number) => {
   if (!props.apiKey || uploadingImage.value) return;
   uploadingImage.value = true;
   editorError.value = null;
@@ -134,7 +145,7 @@ const handleImageDrop = async (file: File) => {
     const imageId: string = await response.json();
     const base = API_BASE ? API_BASE.replace(/\/$/, '') : window.location.origin;
     const escapedAlt = file.name.replace(/["<>]/g, '');
-    markdownEditor.value?.insertText(`<img src="${base}/api/images/${imageId}" alt="${escapedAlt}" />\n`);
+    markdownEditor.value?.insertText(`<img src="${base}/api/images/${imageId}" alt="${escapedAlt}" />\n`, position);
   } catch (caught: any) {
     editorError.value = caught.message ?? 'The image could not be uploaded';
   } finally {
@@ -229,7 +240,6 @@ onBeforeUnmount(() => {
             </button>
             <div class="min-w-0">
               <h1 class="truncate text-sm font-semibold text-white sm:text-base">{{ project.title }}</h1>
-              <p class="hidden text-xs text-neutral-500 sm:block">Project description</p>
             </div>
           </div>
         </div>
@@ -240,7 +250,6 @@ onBeforeUnmount(() => {
             <span v-else-if="saving">Saving…</span>
             <span v-else-if="hasChanges" class="unsaved-dot">Unsaved changes</span>
             <span v-else-if="savedAt">Saved at {{ savedAt.toLocaleTimeString([], {hour: 'numeric', minute: '2-digit'}) }}</span>
-            <span v-else>All changes saved</span>
           </div>
           <button
             type="button"
@@ -269,7 +278,6 @@ onBeforeUnmount(() => {
         <section :class="['workspace-pane editor-pane', mobilePane === 'write' ? 'flex' : 'hidden']">
           <div class="pane-label">
             <span>Markdown</span>
-            <span class="hidden sm:inline">Autocomplete: <kbd>/</kbd> or <kbd>Ctrl Space</kbd></span>
           </div>
           <MarkdownEditor
             ref="markdownEditor"
@@ -282,15 +290,10 @@ onBeforeUnmount(() => {
 
         <section :class="['workspace-pane preview-pane', mobilePane === 'preview' ? 'flex' : 'hidden']">
           <div class="pane-label">
-            <span>Live preview</span>
-            <span>Updates as you type</span>
+            <span>Preview</span>
           </div>
           <div class="preview-scroll">
             <div v-if="editedMarkdown.trim()" v-html="renderedPreview" class="markdown-content prose prose-invert mx-auto max-w-3xl"></div>
-            <div v-else class="empty-preview">
-              <Icon icon="material-symbols:preview-outline-rounded" />
-              <p>Your formatted preview will appear here.</p>
-            </div>
           </div>
         </section>
       </main>
@@ -494,8 +497,6 @@ onBeforeUnmount(() => {
   text-transform: uppercase;
 }
 
-.pane-label kbd { letter-spacing: normal; text-transform: none; }
-
 .preview-scroll {
   min-height: 0;
   flex: 1;
@@ -503,18 +504,6 @@ onBeforeUnmount(() => {
   padding: 28px clamp(20px, 4vw, 64px) 35vh;
   background: #0d0d0d;
 }
-
-.empty-preview {
-  display: grid;
-  min-height: 45vh;
-  place-content: center;
-  justify-items: center;
-  gap: 10px;
-  color: #525252;
-  text-align: center;
-}
-
-.empty-preview svg { font-size: 34px; }
 
 @media (min-width: 640px) {
   .save-status { display: block; }

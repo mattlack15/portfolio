@@ -207,14 +207,7 @@ onBeforeUnmount(() => {
       </div>
 
       <div class="mx-auto w-full max-w-4xl">
-        <div class="description-heading">
-          <span>Description</span>
-          <button v-if="canEdit" type="button" class="inline-edit-button" @click="openEditor">
-            <Icon icon="material-symbols:edit-outline-rounded" />
-            Edit
-          </button>
-        </div>
-        <div v-html="renderedDescription" class="markdown-content prose prose-invert mt-7 max-w-none"></div>
+        <div v-html="renderedDescription" class="markdown-content prose prose-invert max-w-none"></div>
       </div>
     </article>
 
@@ -226,7 +219,7 @@ onBeforeUnmount(() => {
       @click="openEditor"
     >
       <Icon icon="material-symbols:edit-outline-rounded" class="text-xl" />
-      <span>Edit description</span>
+      <span>Edit</span>
     </button>
   </section>
 
@@ -302,19 +295,6 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
-.description-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid #262626;
-  padding-bottom: 10px;
-  color: #737373;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: .13em;
-  text-transform: uppercase;
-}
-
 .project-cover {
   display: block;
   width: auto;
@@ -324,28 +304,11 @@ onBeforeUnmount(() => {
 
 .markdown-content :deep(img) {
   display: block;
-  width: auto !important;
   height: auto !important;
   max-width: 100% !important;
   margin-inline: auto;
   object-fit: contain;
 }
-
-.inline-edit-button {
-  display: inline-flex;
-  cursor: pointer;
-  align-items: center;
-  gap: 5px;
-  border-radius: 6px;
-  padding: 5px 8px;
-  color: #a3a3a3;
-  font-size: 12px;
-  letter-spacing: normal;
-  text-transform: none;
-  transition: background-color 120ms ease, color 120ms ease;
-}
-
-.inline-edit-button:hover { background: #202020; color: white; }
 
 .floating-edit-button {
   position: fixed;

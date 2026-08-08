@@ -8,11 +8,12 @@ import 'highlight.js/styles/github-dark.css';
 import {markedHighlight} from 'marked-highlight';
 import MarkdownEditor from '@/components/MarkdownEditor.vue';
 import {pioasmHighlightLanguage} from '@/editor/pioasm';
+import {API_BASE, withEditorSession} from '@/auth/api';
 
 const props = withDefaults(defineProps<{
-  apiKey: string | null;
+  authToken: string | null;
 }>(), {
-  apiKey: null,
+  authToken: null,
 });
 
 interface Project {
@@ -40,7 +41,6 @@ const mobilePane = ref<'write' | 'preview'>('write');
 const markdownEditor = ref<InstanceType<typeof MarkdownEditor> | null>(null);
 let previousBodyOverflow = '';
 
-const API_BASE: string = (import.meta as any).env?.VITE_API_BASE || '';
 const highlightAliases: Record<string, string> = {
   asm: 'x86asm',
   assembly: 'x86asm',
@@ -63,7 +63,7 @@ const marked = new Marked(
   }),
 );
 
-const canEdit = computed(() => Boolean(props.apiKey));
+const canEdit = computed(() => Boolean(props.authToken));
 const hasChanges = computed(() => editedMarkdown.value !== savedMarkdown.value);
 const renderedDescription = computed(() => marked.parse(project.value?.description || '') as string);
 const renderedPreview = computed(() => marked.parse(editedMarkdown.value || '') as string);
@@ -109,14 +109,14 @@ const closeEditor = () => {
 };
 
 const saveMarkdown = async () => {
-  if (!project.value || !props.apiKey || saving.value || !hasChanges.value) return;
+  if (!project.value || !props.authToken || saving.value || !hasChanges.value) return;
   saving.value = true;
   editorError.value = null;
   const updatedProject = {...project.value, description: editedMarkdown.value};
   try {
-    const response = await fetch(`${API_BASE}/api/projects/save?apiKey=${encodeURIComponent(props.apiKey)}`, {
+    const response = await fetch(`${API_BASE}/api/projects/save`, {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
+      headers: withEditorSession(props.authToken, {'Content-Type': 'application/json'}),
       body: JSON.stringify(updatedProject),
     });
     if (!response.ok) throw new Error('The description could not be saved');
@@ -131,14 +131,15 @@ const saveMarkdown = async () => {
 };
 
 const handleImageDrop = async (file: File, position: number) => {
-  if (!props.apiKey || uploadingImage.value) return;
+  if (!props.authToken || uploadingImage.value) return;
   uploadingImage.value = true;
   editorError.value = null;
   try {
     const formData = new FormData();
     formData.append('image', file);
-    const response = await fetch(`${API_BASE}/api/images/upload?apiKey=${encodeURIComponent(props.apiKey)}`, {
+    const response = await fetch(`${API_BASE}/api/images/upload`, {
       method: 'POST',
+      headers: withEditorSession(props.authToken),
       body: formData,
     });
     if (!response.ok) throw new Error('The image could not be uploaded');

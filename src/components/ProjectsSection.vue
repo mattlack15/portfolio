@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {computed, ref, onMounted} from 'vue';
 import ProjectCard from "@/components/ProjectCard.vue";
+import {API_BASE, withEditorSession} from '@/auth/api';
 
 interface Project {
   id: string;
@@ -13,21 +14,21 @@ interface Project {
 }
 
 // Props
-const props = defineProps<{ apiKey: string | null }>();
+const props = defineProps<{ authToken: string | null }>();
 
 const projects = ref<Project[]>([]);
 const loading = ref(false);
 const error = ref<string | null>(null);
 
 const edit = computed(() => {
-  return props.apiKey !== null && props.apiKey !== '';
+  return props.authToken !== null && props.authToken !== '';
 });
 
 /* --------------------------- Fetch Projects --------------------------- */
 const fetchProjects = async () => {
   loading.value = true;
   try {
-    const resp = await fetch(`/api/projects/list`);
+    const resp = await fetch(`${API_BASE}/api/projects/list`);
     if (!resp.ok) throw new Error(`Failed to fetch (${resp.status})`);
     projects.value = await resp.json();
     // Ensure projects are sorted by orderIndex
@@ -83,12 +84,12 @@ const onDrop = async (event: DragEvent, index: number) => {
 };
 
 const sendReorder = async () => {
-  if (!props.apiKey) return; // require key for reorder
+  if (!props.authToken) return;
   try {
     const ids = projects.value.map(p => p.id);
-    const resp = await fetch(`/api/projects/reorder?apiKey=${props.apiKey}`, {
+    const resp = await fetch(`${API_BASE}/api/projects/reorder`, {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
+      headers: withEditorSession(props.authToken, {'Content-Type': 'application/json'}),
       body: JSON.stringify(ids)
     });
     if (!resp.ok) throw new Error('Failed to reorder');
@@ -123,9 +124,9 @@ const saveProject = async () => {
   };
 
   try {
-    const resp = await fetch(`/api/projects/save?apiKey=${props.apiKey}`, {
+    const resp = await fetch(`${API_BASE}/api/projects/save`, {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
+      headers: withEditorSession(props.authToken, {'Content-Type': 'application/json'}),
       body: JSON.stringify(temp)
     });
     if (!resp.ok) throw new Error('Failed to save');
@@ -159,7 +160,7 @@ const saveProject = async () => {
           @drop="(e) => onDrop(e, index)"
           class="w-full sm:w-64 md:w-80"
         >
-          <ProjectCard :api-key="apiKey" :project="project" @fetch="fetchProjects"/>
+          <ProjectCard :auth-token="authToken" :project="project" @fetch="fetchProjects"/>
         </div>
       </template>
 

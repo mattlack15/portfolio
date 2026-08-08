@@ -1,6 +1,4 @@
-package ca.mattlack.portfolio.ca.mattlack.portfolio
-
-import ca.mattlack.portfolio.security.ApiKeyFilter
+package ca.mattlack.portfolio.security
 import org.springframework.boot.web.servlet.FilterRegistrationBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -8,8 +6,8 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 open class ApiConfig {
     @Bean
-    open fun addFilter(filter: ApiKeyFilter): FilterRegistrationBean<ApiKeyFilter> {
-        val registration = FilterRegistrationBean<ApiKeyFilter>()
+    open fun addFilter(filter: EditorAuthFilter): FilterRegistrationBean<EditorAuthFilter> {
+        val registration = FilterRegistrationBean<EditorAuthFilter>()
         registration.filter = filter
         registration.addUrlPatterns("/api/*")
         return registration

@@ -13,6 +13,8 @@ dist
 dist-ssr
 coverage
 *.local
+api/.gradle/
+api/build/
 
 /cypress/videos/
 /cypress/screenshots/

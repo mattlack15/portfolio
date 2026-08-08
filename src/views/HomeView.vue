@@ -7,13 +7,13 @@ import AboutMeSection from "@/components/AboutMeSection.vue";
 import {computed} from "vue";
 
 const props = withDefaults(defineProps<{
-  apiKey: string | null;
+  authToken: string | null;
 }>(), {
-  apiKey: null,
+  authToken: null,
 })
 
 const edit = computed(() => {
-  return props.apiKey !== null && props.apiKey !== '';
+  return props.authToken !== null && props.authToken !== '';
 })
 
 </script>
@@ -22,7 +22,7 @@ const edit = computed(() => {
   <HeroSection/>
   <ExperienceSection/>
   <AboutMeSection/>
-  <ProjectsSection :api-key="apiKey"/>
+  <ProjectsSection :auth-token="authToken"/>
 </template>
 
 <style scoped>

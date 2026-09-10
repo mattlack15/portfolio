@@ -1,7 +1,7 @@
 # Private movie streaming
 
-The VPS relays a single file from the Mac over a loopback-only reverse SSH
-forward. Video is never added to Git or uploaded in full to the VPS. The existing
+The VPS downloads and permanently retains a single movie from the Mac over a
+loopback-only reverse SSH forward. Video is never added to Git. The existing
 portfolio Java backend is not involved.
 
 ## Start on the Mac
@@ -54,3 +54,32 @@ directly to the VPS rather than through Cloudflare's website proxy.
 Server port 18765 must remain loopback-only. The local server validates the
 sharing token for both media GET and HEAD requests and supports single byte
 ranges, including suffix and open-ended ranges, for seeking.
+
+## Persistent VPS copy
+
+`portfolio-movie-cache.service` serves the player and authenticated media on
+loopback port 18766; Nginx routes `/watch/` there. The original SSH source stays
+on 18765. Existing links and cookies keep working.
+
+The copy lives at
+`/home/ubuntu/.local/state/portfolio-movie-cache/avatar.mp4`.
+It is downloaded in 2 MiB pieces, with durable checksum markers recording which
+pieces are safe to serve. Requested pieces take priority over the background
+download. Missing pieces resume after a source interruption or service restart.
+Until complete, the file can contain holes; its apparent length is not download
+progress. The authenticated `/watch/status` endpoint reports actual saved bytes.
+`complete.json` is written only after the entire movie matches its expected
+SHA-256. A full verified copy plays without any connection to the Mac.
+
+There is no expiration, eviction, or automatic deletion. The systemd service
+starts on VPS boot. Stop the Mac stream when `/watch/status` reports
+`complete: true`; the server keeps serving its permanent copy.
+
+Configuration (token, expected size/hash, directory) is stored outside Git at
+`/home/ubuntu/.local/state/portfolio-movie-cache/config.json`, readable only by
+ubuntu. Restart with `sudo systemctl restart portfolio-movie-cache` after config
+changes. Token rotation now requires updating this config as well as the Mac's
+token file. Never point an existing cache directory at a different movie.
+
+Run `python3 scripts/test-cache-movie.py` for interrupted-download, restart,
+offline playback, authentication, byte-range, and damaged-chunk checks.

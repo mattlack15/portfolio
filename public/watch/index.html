@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><title>Watch · Matt Lack</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,sans-serif;background:#090c12;color:#f3f4f6}*{box-sizing:border-box}body{margin:0}main{max-width:1100px;margin:auto;padding:32px 20px}header{display:flex;justify-content:space-between;align-items:center;margin-bottom:36px}a{color:#b5bdcc;text-decoration:none;font-size:14px}h1{font-size:clamp(24px,4vw,36px);font-weight:500;margin:0}video{display:block;width:100%;max-height:75vh;aspect-ratio:16/9;background:#000;border-radius:12px}p{color:#b5bdcc;font-size:16px;line-height:1.5}button{font:inherit;color:#fff;background:#26344c;border:1px solid #526582;padding:10px 18px;border-radius:8px;cursor:pointer}button:focus-visible,a:focus-visible{outline:2px solid #99bbff;outline-offset:4px}[hidden]{display:none!important}
+</style></head><body><main><header><h1>Movie night</h1><a href="https://mattlack.com">Matt Lack ↗</a></header><video id="video" controls playsinline preload="metadata" hidden></video><p id="status" role="status">Connecting…</p><button id="retry" hidden>Try again</button></main><script>
+const video=document.querySelector('#video'),status=document.querySelector('#status'),retry=document.querySelector('#retry');
+let key=location.hash.slice(1);history.replaceState(null,'',location.pathname);
+async function connect(){
+ retry.hidden=true;status.textContent='Connecting…';
+ try {
+  if(key){const auth=await fetch('/watch/session',{method:'POST',body:key});if(!auth.ok)throw new Error(auth.status===401?'This sharing link is invalid. Ask Matt for a new link.':'The stream is offline. Try again shortly.');key='';}
+  const check=await fetch('/watch/movie.mp4',{method:'HEAD'});
+  if(!check.ok)throw new Error(check.status===401?'Open the private sharing link from Matt to watch.':'The stream is offline. Try again shortly.');
+  video.hidden=false;video.src='/watch/movie.mp4';video.load();status.textContent='Ready to watch. Press play.';
+ }catch(e){status.textContent=e.message;retry.hidden=false;}
+}
+video.addEventListener('playing',()=>status.textContent='');
+video.addEventListener('waiting',()=>status.textContent='Buffering…');
+video.addEventListener('error',()=>{status.textContent='Playback was interrupted. Try reconnecting to the stream.';retry.hidden=false;});
+retry.addEventListener('click',connect);connect();
+</script></body></html>

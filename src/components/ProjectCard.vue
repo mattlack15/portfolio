@@ -149,7 +149,7 @@ const handleDrop = async (event: DragEvent, project: Project) => {
       <!-- Image -->
       <div class="relative" @dragover.prevent @drop="handleDrop($event, project)">
         <img v-if="project.imageId" :src="`${API_BASE}/api/images/${project.imageId}`" :alt="project.title"
-             class="w-full h-40 object-cover rounded-t-xl" @click.stop="cardClick(project.id)"/>
+             class="w-full h-40 object-cover rounded-t-xl" :data-analytics-target="`/project/${project.id}`" :data-analytics-label="project.title" @click.stop="cardClick(project.id)"/>
         <div v-else-if="edit" class="w-full h-40 flex items-center justify-center border border-dashed border-neutral text-neutral rounded-t-xl">
           Drop image here
         </div>
@@ -168,7 +168,7 @@ const handleDrop = async (event: DragEvent, project: Project) => {
       </template>
 
       <div class="p-4 flex flex-col">
-        <h3 @click.stop="cardClick(project.id)" class="text-lg font-semibold uppercase text-primary">
+        <h3 :data-analytics-target="`/project/${project.id}`" :data-analytics-label="project.title" @click.stop="cardClick(project.id)" class="text-lg font-semibold uppercase text-primary">
           {{ project.title }}</h3>
 
         <div  v-if="editingId === project.id" class="space-y-2 mt-2">
@@ -182,7 +182,7 @@ const handleDrop = async (event: DragEvent, project: Project) => {
             </button>
           </div>
         </div>
-        <p @click.stop="cardClick(project.id)" v-else class="text-gray-400 mt-2 line-clamp-5">{{ project.brief }}</p>
+        <p :data-analytics-target="`/project/${project.id}`" :data-analytics-label="project.title" @click.stop="cardClick(project.id)" v-else class="text-gray-400 mt-2 line-clamp-5">{{ project.brief }}</p>
 
         <!-- tech area -->
         <div v-if="project.technologies?.length || edit" class="mt-4">

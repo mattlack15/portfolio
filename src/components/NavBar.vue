@@ -50,6 +50,7 @@ onUnmounted(() => {
   <header>
     <div class="flex justify-between items-center p-6 lg:px-12 relative z-20 border-b border-b-surface">
       <button
+        data-analytics-ignore
         @click.prevent="toggleKeyModal"
         class="cursor-pointer rounded-full bg-surface p-2 text-gray-400 transition hover:bg-accent"
         :class="{'text-primary': authToken}"
@@ -60,6 +61,7 @@ onUnmounted(() => {
       </button>
       <nav>
         <ul class="flex space-x-6">
+          <li v-if="authToken"><RouterLink to="/analytics" class="block hover:text-primary text-white transition">Analytics</RouterLink></li>
           <li v-for="item in menu" :key="item.name">
             <a :href="item.link" class="block hover:text-primary text-white transition">
               {{ item.name }}

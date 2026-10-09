@@ -1,0 +1,18 @@
+[Unit]
+Description=Portfolio API
+After=network.target mongod.service
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/portfolio/api
+Environment=SERVER_PORT=8081
+Environment=SERVER_ADDRESS=127.0.0.1
+ExecStart=/usr/bin/java -Xms64m -Xmx512m -jar /home/ubuntu/portfolio/api/build/libs/api-1.0-SNAPSHOT.jar
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

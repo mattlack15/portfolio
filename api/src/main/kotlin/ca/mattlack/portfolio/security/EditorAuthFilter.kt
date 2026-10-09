@@ -25,7 +25,7 @@ class EditorAuthFilter(
     override fun doFilter(request: ServletRequest, response: ServletResponse, chain: FilterChain) {
         val httpRequest = request as HttpServletRequest
         val httpResponse = response as HttpServletResponse
-        if (httpRequest.method == "OPTIONS" || publicEndpoints.any { it.matches(httpRequest.requestURI) }) {
+        if ((httpRequest.method == "POST" && httpRequest.requestURI == "/api/analytics/events") || httpRequest.method == "OPTIONS" || publicEndpoints.any { it.matches(httpRequest.requestURI) }) {
             chain.doFilter(request, response)
             return
         }

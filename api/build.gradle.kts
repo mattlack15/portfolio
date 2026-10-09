@@ -12,6 +12,7 @@ repositories {
 }
 
 dependencies {
+    implementation("com.maxmind.db:maxmind-db:3.1.1")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")

@@ -30,3 +30,6 @@ api/build/
 *.sw?
 
 *.tsbuildinfo
+
+# Downloaded IP-location database
+api/data/

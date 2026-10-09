@@ -60,7 +60,7 @@ onMounted(() => {
                   </svg>
                   <span class="download-loader text-white hidden"></span>
                 </span>
-                <a href="/resume.pdf" download="resume.pdf" class="pl-2 text-primary">Resume</a>
+                <a href="/resume.pdf?v=88e23cc3df70" download="resume.pdf" class="pl-2 text-primary">Resume</a>
               </span>
             </button>
             <button class="h-10 cursor-pointer border border-primary rounded-full text-primary">

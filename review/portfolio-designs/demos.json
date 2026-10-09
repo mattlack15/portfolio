@@ -3,18 +3,18 @@
     "id": "editorial",
     "name": "First design",
     "number": "01",
-    "duration": 45.333008,
+    "duration": 45.233333,
     "changes": [
-      "The same layout, with a system font and a direct introduction.",
-      "The heading names the project. The divider rules and colored accents are gone.",
-      "The project arrangement is unchanged. Filters use plain text.",
-      "The system font and simpler styling continue into the project writeup."
+      "The same page layout, with PT Sans, regular-weight headings, and white space around the text.",
+      "The board has a caption. The introduction explains the actual work without a slogan.",
+      "Images keep their own proportions. Project names use ordinary text links.",
+      "The typography and link styling carry through to the original technical writeup."
     ],
     "mobile": [
-      "The original layout is retained",
-      "Headings use the system font",
-      "No decorative rules or accents",
-      "The same project filters and links"
+      "The same sections and order",
+      "Readable text without tiny labels",
+      "Images retain their proportions",
+      "Filters and project links remain"
     ]
   },
   {

@@ -13,6 +13,7 @@ page.on('pageerror',e=>errors.push(e.message));
 async function verifyPage(path,width,height) {
   await page.setViewportSize({width,height});
   await page.goto(base+path,{waitUntil:'networkidle'});
+  await page.evaluate(() => document.fonts.ready);
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,`${path} overflow at ${width}px`);
   assert.equal(await page.locator('h1').count(),1,`${path} needs one page heading`);
   assert.equal(await page.locator('img').evaluateAll(images=>images.some(img=>img.complete&&img.naturalWidth===0)),false,`${path} has a failed image`);
@@ -37,7 +38,7 @@ await page.setViewportSize({width:1440,height:1000});
 await page.goto(base+'/designs/editorial');
 await page.locator('.design-filter').getByRole('button',{name:'Hardware',exact:true}).click();
 assert.equal(await page.locator('.e-project').count(),2);
-await page.locator('.e-project').first().click();
+await page.locator('.e-project h3 a').first().click();
 await page.waitForURL('**/project/**');
 assert.match(page.url(),/\/project\//);
 await page.getByRole('link',{name:'Back to projects'}).click();

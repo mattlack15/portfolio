@@ -17,14 +17,14 @@ watchEffect(()=>{document.title=`${project.value?.name||'Project not found'} | M
 
 <template>
   <DesignFrame><div :class="['design-project',route.params.direction]">
-    <header class="dp-header"><RouterLink :to="`/designs/${direction?.id || 'editorial'}`">Matthew Lack</RouterLink><div><RouterLink :to="`/designs/${direction?.id || 'editorial'}`">All projects</RouterLink><a href="/resume.pdf" target="_blank" rel="noopener">Resume ↗</a></div></header>
+    <header class="dp-header"><RouterLink :to="`/designs/${direction?.id || 'editorial'}`">Matthew Lack</RouterLink><div><RouterLink :to="`/designs/${direction?.id || 'editorial'}`">All projects</RouterLink><a href="/resume.pdf" target="_blank" rel="noopener">Resume<span v-if="direction?.id !== 'editorial'"> ↗</span></a></div></header>
     <main v-if="project && direction">
       <RouterLink :to="`/designs/${direction.id}`" class="dp-back">← {{ direction.id === 'editorial' ? 'Back to projects' : `Back to ${direction.name}` }}</RouterLink><div class="dp-title"><span v-if="direction.id !== 'editorial'" class="design-eyebrow">{{ project.category }} / Project {{ String(project.orderIndex+1).padStart(2,'0') }}</span><h1>{{ project.name }}</h1><p>{{ project.summary }}</p><ul v-if="project.technologies.length" class="dp-stack" aria-label="Project technologies"><li v-for="tech in project.technologies" :key="tech">{{ tech }}</li></ul></div>
       <div v-if="project.image" class="dp-cover"><img :src="project.image" :alt="project.name" /></div>
       <article v-if="project.description.trim()" v-html="description" class="dp-prose"></article>
       <article v-else class="dp-prose"><h2>About this project</h2><p>{{ project.summary }}</p><p class="dp-empty-note">I haven't added a longer writeup for this project yet.</p></article>
-      <RouterLink :to="projectLink(direction.id,next.id)" class="dp-next"><span class="design-eyebrow">Next project</span><strong>{{ next.name }}</strong><span>↗</span></RouterLink>
-      <footer class="design-footer"><span>Matthew Lack · Toronto</span><div><RouterLink :to="`/designs/${direction.id}`">All projects</RouterLink><a href="https://github.com/mattlack15" target="_blank" rel="noopener">GitHub ↗</a></div></footer>
+      <RouterLink :to="projectLink(direction.id,next.id)" class="dp-next"><span class="design-eyebrow">Next project</span><strong>{{ next.name }}</strong><span v-if="direction.id !== 'editorial'">↗</span></RouterLink>
+      <footer class="design-footer"><span>Matthew Lack · Toronto</span><div><RouterLink :to="`/designs/${direction.id}`">All projects</RouterLink><a href="https://github.com/mattlack15" target="_blank" rel="noopener">GitHub<span v-if="direction.id !== 'editorial'"> ↗</span></a></div></footer>
     </main>
     <main v-else class="dp-missing"><h1>Project not found</h1><RouterLink to="/designs">View the design choices →</RouterLink></main>
   </div></DesignFrame>
@@ -43,16 +43,29 @@ watchEffect(()=>{document.title=`${project.value?.name||'Project not found'} | M
 .dp-prose { max-width:800px; margin:0 auto 70px; font-size:16px; line-height:1.9; overflow-wrap:anywhere; }.dp-prose>p,.dp-prose>div,.dp-prose>ul,.dp-prose>ol { margin:22px 0; }.dp-prose h1,.dp-prose h2,.dp-prose h3,.dp-prose h4 { line-height:1.25; margin:50px 0 23px; font-family:Georgia,serif; letter-spacing:-.025em; }.dp-prose h1 { font-size:38px; }.dp-prose h2 { font-size:30px; }.dp-prose h3 { font-size:24px; }.dp-prose h4 { font-size:20px; }.dp-prose ul,.dp-prose ol { padding-left:26px; list-style:revert; }.dp-prose li { margin:10px 0; }.dp-prose a { color:var(--accent); text-decoration:underline; text-underline-offset:3px; }.dp-prose img { margin:35px auto; height:auto!important; max-width:100%!important; object-fit:contain; }.dp-prose pre { max-width:100%; overflow:auto; background:#182019; color:#e1e8de; padding:24px; font:12px/1.8 'Courier New',monospace; border:1px solid #354239; }.dp-prose code { font-family:'Courier New',monospace; font-size:.85em; }.dp-prose pre code { font-size:inherit; white-space:pre; }.dp-prose :not(pre)>code { background:var(--line); padding:2px 4px; }.dp-prose blockquote { border-left:2px solid var(--accent); padding-left:22px; color:var(--muted); }.dp-prose table { display:block; max-width:100%; overflow:auto; border-collapse:collapse; font-size:13px; }.dp-prose td,.dp-prose th { border:1px solid var(--line); padding:12px; }.dp-prose hr { border:0; border-top:1px solid var(--line); margin:40px 0; }.dp-empty-note { color:var(--muted); font-size:14px; }
 .dp-next { display:grid; grid-template-columns:1fr auto; gap:15px; padding:35px 0 50px; border-top:1px solid var(--line); }.dp-next>.design-eyebrow { grid-column:span 2; color:var(--muted); }.dp-next strong { font:30px/1.25 Georgia,serif; }.dp-next>span:last-child { font-size:30px; color:var(--accent); }.dp-missing { padding:100px 0; }
 .dp-prose .hljs-keyword,.dp-prose .hljs-literal { color:#c9d5af; }.dp-prose .hljs-string { color:#a6ceba; }.dp-prose .hljs-comment { color:#92a58b; }.dp-prose .hljs-number { color:#ddb69b; }
-.design-project.editorial { --ink:#252525; --muted:#535353; --accent:#252525; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif; }
+.design-project.editorial { --paper:var(--editorial-paper); --ink:var(--editorial-ink); --muted:var(--editorial-muted); --accent:var(--editorial-link); font-family:var(--editorial-font); }
 .editorial .dp-header, .editorial .dp-next, .editorial .design-footer, .editorial .dp-stack li { border:0; }
-.editorial .dp-header>a { font:600 22px/1.3 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif; }
-.editorial .dp-title h1 { font:600 clamp(32px,4vw,48px)/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif; letter-spacing:normal; }
+.editorial .dp-header { align-items:baseline; font-size:16px; }
+.editorial .dp-header>a { font:400 23px/1.3 var(--editorial-font); white-space:nowrap; }
+.editorial .dp-header>div a, .editorial .dp-back { color:var(--accent); text-decoration:underline; text-underline-offset:3px; }
+.editorial .dp-back { font-size:16px; }
+.editorial .dp-title h1 { font:400 clamp(32px,4vw,44px)/1.25 var(--editorial-font); letter-spacing:normal; text-wrap:pretty; }
 .editorial .dp-title p { color:var(--ink); }
-.editorial .dp-stack { font:13px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif; }
+.editorial .dp-title p { font-size:19px; line-height:1.6; }
+.editorial .dp-stack { font:16px/1.5 var(--editorial-font); }
 .editorial .dp-cover { padding:0; background:transparent; }
-.editorial .dp-prose { line-height:1.8; }
-.editorial .dp-prose h1, .editorial .dp-prose h2, .editorial .dp-prose h3, .editorial .dp-prose h4, .editorial .dp-next strong { font-family:inherit; letter-spacing:normal; font-weight:600; }
+.editorial .dp-prose { font-size:18px; line-height:1.65; }
+.editorial .dp-prose h1, .editorial .dp-prose h2, .editorial .dp-prose h3, .editorial .dp-prose h4, .editorial .dp-next strong { font-family:inherit; letter-spacing:normal; font-weight:400; }
+.editorial .dp-next strong { color:var(--accent); text-decoration:underline; text-underline-offset:3px; }
 .editorial .dp-next strong { font-size:26px; }
-.editorial .design-eyebrow { font:13px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif; letter-spacing:normal; text-transform:none; }
+.editorial .design-eyebrow { font:16px/1.5 var(--editorial-font); letter-spacing:normal; text-transform:none; }
+.editorial .dp-prose pre { background:#f4f5f6; color:var(--ink); border:0; }
+.editorial .dp-prose .hljs-keyword,.editorial .dp-prose .hljs-literal { color:#254e84; }
+.editorial .dp-prose .hljs-string { color:#346638; }
+.editorial .dp-prose .hljs-comment { color:#555f65; }
+.editorial .dp-prose .hljs-number { color:#854826; }
+.editorial .dp-prose :not(pre)>code { background:#f4f5f6; }
+.editorial .design-footer { font-size:16px; }
+@media(max-width:380px) { .editorial .dp-header { flex-direction:column; gap:16px; align-items:flex-start; }.editorial .dp-header>div { font-size:15px; } }
 @media(max-width:600px) { .dp-header>a { font-size:20px; }.dp-header>div { gap:20px; font-size:11px; }.dp-title h1 { font-size:41px; }.dp-title p { font-size:15px; }.dp-back { margin:27px 0; }.dp-stack { font-size:10px; gap:7px 15px; }.dp-cover { padding:15px; margin-bottom:35px; }.dp-prose { font-size:14px; line-height:1.85; }.dp-prose h1 { font-size:30px; }.dp-prose h2 { font-size:26px; }.dp-prose h3 { font-size:22px; }.dp-prose pre { font-size:11px; padding:15px; }.dp-next strong { font-size:25px; } }
 </style>

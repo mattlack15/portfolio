@@ -1,0 +1,33 @@
+{
+  "checks": [
+    {
+      "width": 1440,
+      "fontLoaded": true,
+      "imageProportions": true,
+      "filterAndKeyboardNavigation": true,
+      "result": "pass"
+    },
+    {
+      "width": 768,
+      "fontLoaded": true,
+      "imageProportions": true,
+      "filterAndKeyboardNavigation": true,
+      "result": "pass"
+    },
+    {
+      "width": 390,
+      "fontLoaded": true,
+      "imageProportions": true,
+      "filterAndKeyboardNavigation": true,
+      "result": "pass"
+    },
+    {
+      "width": 320,
+      "fontLoaded": true,
+      "imageProportions": true,
+      "filterAndKeyboardNavigation": true,
+      "result": "pass"
+    }
+  ],
+  "errors": []
+}

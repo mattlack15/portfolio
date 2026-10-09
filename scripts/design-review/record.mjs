@@ -5,7 +5,7 @@ import {spawnSync} from 'node:child_process';
 import snapshot from '../../src/designs/projects.json' with {type:'json'};
 
 const specs = [
-  {id:'editorial',name:'First design',number:'01',intro:'The same layout, with a system font and a direct introduction.',focus:'The heading names the project. The divider rules and colored accents are gone.',interaction:'The project arrangement is unchanged. Filters use plain text.',detail:'The system font and simpler styling continue into the project writeup.',mobile:['The original layout is retained','Headings use the system font','No decorative rules or accents','The same project filters and links']},
+  {id:'editorial',name:'First design',number:'01',intro:'The same page layout, with PT Sans, regular-weight headings, and white space around the text.',focus:'The board has a caption. The introduction explains the actual work without a slogan.',interaction:'Images keep their own proportions. Project names use ordinary text links.',detail:'The typography and link styling carry through to the original technical writeup.',mobile:['The same sections and order','Readable text without tiny labels','Images retain their proportions','Filters and project links remain']},
   {id:'workbench',name:'Workbench',number:'02',intro:'A project explorer with a sidebar and an inspection pane.',focus:'Select a project without leaving the collection.',interaction:'Inspect the actual technology stack, then narrow the project list.',detail:'Open the complete writeup when you want more detail.',mobile:['The sidebar becomes a header','A compact, scrollable explorer','The inspection pane sits below','Overview and stack tabs remain']},
   {id:'gallery',name:'Gallery',number:'03',intro:'A blue masthead, large typography, and a gallery of real project images.',focus:'Different image sizes give the work room to breathe.',interaction:'Browse a project type, with short captions beside the screenshots.',detail:'Each project opens into its own page with the full writeup.',mobile:['The masthead scales down','Images stack in one column','Project types remain available','The full writeups still follow']},
   {id:'index',name:'Personal Index',number:'04',intro:'A brief personal introduction and a compact index of all 17 projects.',focus:'Expand a project to see its image, summary, and technologies.',interaction:'Search by name or technology; the list narrows as you type.',detail:'Open a full project page from an expanded row.',mobile:['Small, direct navigation','Search works at phone widths','Rows expand below their titles','Images stay with the summaries']},
@@ -36,11 +36,12 @@ async function record(spec) {
   await localBaseline(page);
   if(spec.id==='editorial') {
     await page.goto(`${base}/designs/editorial`,{waitUntil:'networkidle'});
-    await page.setContent(`<html><body style="margin:0;background:#f4f1e8"><img src="${base}/design-assets/previews/editorial-v1.jpg" alt="Previous draft screenshot" style="display:block;width:100%"></body></html>`,{waitUntil:'domcontentloaded'});
+    await page.setContent(`<html><body style="margin:0;background:#f4f1e8"><img src="${base}/design-assets/previews/editorial-v2.jpg" alt="Previous draft screenshot" style="display:block;width:100%"></body></html>`,{waitUntil:'domcontentloaded'});
     await page.waitForFunction(()=>document.querySelector('img').complete&&document.querySelector('img').naturalWidth>0);
   } else {
     await page.goto(base,{waitUntil:'networkidle'});
   }
+  await page.evaluate(() => document.fonts.ready);
   let start=Date.now();
   const desktopOffset=(start-origin)/1000;
   const cues=[];
@@ -67,7 +68,7 @@ async function record(spec) {
   }
   async function click(locator) {await locator.hover();await hold(450);await locator.click();await hold(350);}
   if(spec.id==='editorial') {
-    await caption('BEFORE / PREVIOUS DRAFT SCREENSHOT','The earlier draft used serif type, slogans, color accents, and decorative rules.');
+    await caption('BEFORE / PREVIOUS DRAFT SCREENSHOT','The previous revision still had heavy headings, small gray labels, and uniform image boxes.');
     await hold(4000);
   } else {
     await caption('BEFORE / CURRENT SITE','The current homepage introduces skills before the project collection.');
@@ -82,7 +83,7 @@ async function record(spec) {
     await scrollTo('#e-work');await caption('BROWSE THE COLLECTION',spec.interaction);await hold(1800);
     await click(page.locator('.design-filter').getByRole('button',{name:'Hardware',exact:true}));await hold(2300);
     await click(page.locator('.design-filter').getByRole('button',{name:'Web',exact:true}));await hold(2300);
-    await click(page.locator('.e-project').filter({has:page.locator('h3',{hasText:'Belfort Events'})}));
+    await click(page.locator('.e-project h3').getByRole('link',{name:'Belfort Events',exact:true}));
   } else if(spec.id==='workbench') {
     await scrollTo('#w-projects');await caption('PROJECT INSPECTION',spec.focus);await hold(2200);
     await click(page.locator('.w-list').getByRole('button',{name:/MidnightSky/}));await hold(2400);

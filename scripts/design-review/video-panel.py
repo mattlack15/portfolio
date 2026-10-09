@@ -5,7 +5,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 spec = json.load(open(sys.argv[1]))
 plain = spec['id'] == 'editorial'
-background = '#f4f1e8' if plain else '#edf0e8'
+background = '#ffffff' if plain else '#edf0e8'
 ink = '#252525' if plain else '#263d33'
 muted = '#535353' if plain else '#596d4f'
 image = Image.new('RGB', (1440, 1000), background)
@@ -13,14 +13,14 @@ draw = ImageDraw.Draw(image)
 font_root = '/System/Library/Fonts/Supplemental/'
 def font(name, size):
     try:
-        return ImageFont.truetype(font_root + name, size)
+        return ImageFont.truetype(name if '/' in name else font_root + name, size)
     except OSError:
         return ImageFont.load_default(size=size)
 
-label = font('Arial.ttf' if plain else 'Courier New.ttf', 16)
-title = font('Arial.ttf' if plain else 'Georgia.ttf', 54 if plain else 64)
-body = font('Arial.ttf', 25)
-small = font('Arial.ttf', 20)
+label = font('public/design-assets/fonts/pt-sans-regular.ttf' if plain else 'Courier New.ttf', 16)
+title = font('public/design-assets/fonts/pt-sans-regular.ttf' if plain else 'Georgia.ttf', 54 if plain else 64)
+body = font('public/design-assets/fonts/pt-sans-regular.ttf' if plain else 'Arial.ttf', 25)
+small = font('public/design-assets/fonts/pt-sans-regular.ttf' if plain else 'Arial.ttf', 20)
 draw.text((85, 110), spec['number'] + ' / ' + spec['name'].upper(), font=label, fill=muted)
 draw.text((80, 175), 'Mobile layout' if plain else 'On a phone.', font=title, fill=ink)
 draw.text((85, 277), '390 px wide / real browser recording', font=small, fill=muted)

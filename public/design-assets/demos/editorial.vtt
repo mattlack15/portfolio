@@ -1,36 +1,36 @@
 WEBVTT
 
 1
-00:00:00.000 --> 00:00:04.697
+00:00:00.000 --> 00:00:04.620
 BEFORE / PREVIOUS DRAFT SCREENSHOT
-The earlier draft used serif type, slogans, color accents, and decorative rules.
+The previous revision still had heavy headings, small gray labels, and uniform image boxes.
 
 2
-00:00:04.697 --> 00:00:09.494
+00:00:04.620 --> 00:00:09.420
 01 / FIRST DESIGN
-The same layout, with a system font and a direct introduction.
+The same page layout, with PT Sans, regular-weight headings, and white space around the text.
 
 3
-00:00:09.494 --> 00:00:13.081
+00:00:09.420 --> 00:00:13.015
 PROJECTS FIRST
-The heading names the project. The divider rules and colored accents are gone.
+The board has a caption. The introduction explains the actual work without a slogan.
 
 4
-00:00:13.081 --> 00:00:22.193
+00:00:13.015 --> 00:00:22.188
 BROWSE THE COLLECTION
-The project arrangement is unchanged. Filters use plain text.
+Images keep their own proportions. Project names use ordinary text links.
 
 5
-00:00:22.193 --> 00:00:29.997
+00:00:22.188 --> 00:00:30.039
 THE COMPLETE PROJECT
-The system font and simpler styling continue into the project writeup.
+The typography and link styling carry through to the original technical writeup.
 
 6
-00:00:29.997 --> 00:00:31.813
+00:00:30.039 --> 00:00:31.859
 DESKTOP / FIRST DESIGN
 A complete local preview, with the actual projects and their longer writeups.
 
 7
-00:00:31.813 --> 00:00:45.333
+00:00:31.859 --> 00:00:45.233
 MOBILE / 390 PX
-First design on a phone. The original layout is retained. Headings use the system font. No decorative rules or accents. The same project filters and links.
+First design on a phone. The same sections and order. Readable text without tiny labels. Images retain their proportions. Filters and project links remain.

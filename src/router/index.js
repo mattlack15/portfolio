@@ -9,20 +9,23 @@ const routes = [
     {
         path: '/',
         name: 'home',
-        component: HomeView
+        component: () => import('@/designs/DesignView.vue'),
+        meta: {portfolio: true},
     },
     {
         path: '/project/:id',
         name: 'project',
-        component: () => import('@/views/ProjectView.vue')
-    }
+        component: () => import('@/designs/DesignProject.vue'),
+        meta: {portfolio: true},
+    },
+    {path: '/editor', name: 'editor', component: HomeView},
+    {path: '/editor/project/:id', name: 'editor-project', component: () => import('@/views/ProjectView.vue')},
 ]
 
 export default createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: routes,
     scrollBehavior(to, from, savedPosition) {
-      if (!to.path.startsWith('/designs') && !from.path.startsWith('/designs')) return;
       if (savedPosition) return savedPosition;
       if (to.hash) return {el: to.hash, behavior: 'smooth'};
       return {top: 0};

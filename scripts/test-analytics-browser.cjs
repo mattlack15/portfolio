@@ -13,7 +13,7 @@ const assert = require('node:assert/strict');
  await page.waitForFunction(() => document.querySelector('h3'));
  await page.waitForTimeout(200);
  assert.equal(events.filter(e=>e.type==='pageview').length,1);
- await page.getByRole('heading',{name:'Test project',exact:true}).click();
+ await page.getByRole('link',{name:'Test project',exact:true}).click();
  await page.waitForURL('**/project/test-project');
  await page.waitForTimeout(200);
  assert(events.some(e=>e.type==='click' && e.target==='/project/test-project'));

@@ -6,7 +6,7 @@ import {API_BASE, withEditorSession} from '@/auth/api';
 
 const storageKey = 'portfolio-editor-session';
 const route = useRoute();
-const isDesignPreview = computed(() => route.path === '/designs' || route.path.startsWith('/designs/'));
+const isDesignPreview = computed(() => Boolean(route.meta.portfolio) || route.path === '/designs' || route.path.startsWith('/designs/'));
 const editorToken = ref<string | null>(sessionStorage.getItem(storageKey));
 
 const updateEditorToken = (token: string | null) => {

@@ -9,7 +9,7 @@ export function installAnalytics(router) {
     let editor = false;
     try { editor = !!sessionStorage.getItem('portfolio-editor-session'); } catch { /* No storage. */ }
     return !editor && navigator.doNotTrack !== '1' && !navigator.globalPrivacyControl &&
-      !location.pathname.startsWith('/analytics') && !navigator.webdriver;
+      !location.pathname.startsWith('/analytics') && !location.pathname.startsWith('/editor') && !navigator.webdriver;
   };
   const identities = () => {
     const visitor = read('portfolio-visitor') || memoryVisitor;

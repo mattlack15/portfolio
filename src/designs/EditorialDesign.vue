@@ -1,21 +1,27 @@
 <script setup>
 import {computed, ref} from 'vue';
-import {projects, categories, projectLink} from './content';
+import {categories} from './content';
+import {usePortfolio} from './portfolio';
+import ThemeToggle from './ThemeToggle.vue';
+
+const {projects, home, projectLink, live} = usePortfolio();
 
 const filter = ref('All');
-const filtered = computed(() => projects.filter(project => filter.value === 'All' || project.category === filter.value));
-const featured = projects[0];
-const projectImage = project => project.id === featured.id ? '/design-assets/images/5606325.webp' : project.image;
+const filtered = computed(() => projects.value.filter(project => filter.value === 'All' || project.category === filter.value));
+const featured = computed(() => projects.value.find(project => project.id === '1785866116116'));
+const filters = computed(() => [...categories, ...(projects.value.some(p => p.category === 'Other') ? ['Other'] : [])]);
+const projectImage = project => project.id === featured.value?.id ? '/design-assets/images/5606325.webp' : project.image;
 </script>
 
 <template>
   <div class="editorial">
     <header class="e-header">
-      <RouterLink to="/designs/editorial" class="e-brand">Matthew Lack</RouterLink>
+      <RouterLink :to="home" class="e-brand">Matthew Lack</RouterLink>
       <nav aria-label="Portfolio">
         <a href="#e-work">Projects</a>
         <a href="#e-about">About</a>
         <a href="/resume.pdf" target="_blank" rel="noopener">Resume</a>
+        <ThemeToggle />
       </nav>
     </header>
 
@@ -28,13 +34,13 @@ const projectImage = project => project.id === featured.id ? '/design-assets/ima
         <div class="e-intro-copy">
           <h1>I'm Matt, a programmer in Toronto.</h1>
           <p>My dad introduced me to programming when I was young. I started making Minecraft plugins, then built and ran a server network called MidnightSky. More recently, I've been working on web apps and learning about electronics.</p>
-          <a href="https://github.com/mattlack15" target="_blank" rel="noopener" class="e-read-link">github.com/mattlack15</a>
+          <a href="https://github.com/mattlack15" target="_blank" rel="noopener" class="e-read-link editorial-action">GitHub</a>
         </div>
       </section>
 
-      <section class="e-feature" aria-labelledby="e-feature-title">
+      <section v-if="featured" class="e-feature" aria-labelledby="e-feature-title">
         <figure class="e-feature-photo">
-          <RouterLink :to="projectLink('editorial', featured.id)">
+          <RouterLink :to="projectLink(featured.id)">
             <img src="/design-assets/images/5606325.webp" alt="Green interposer board with display connectors and a USB port" />
           </RouterLink>
           <figcaption>The interposer board I built to tap the display signals.</figcaption>
@@ -43,21 +49,21 @@ const projectImage = project => project.id === featured.id ? '/design-assets/ima
           <h2 id="e-feature-title">Reverse engineering an iPhone X display</h2>
           <p>I'm trying to drive this display with an RP2350. First, I need to find out how the phone turns it on, so I built a logic analyzer and a board to record the signals between them.</p>
           <p class="e-tech">C, KiCad, RP2350</p>
-          <RouterLink :to="projectLink('editorial', featured.id)" class="e-read-link">The circuit, firmware, and what I've learned so far</RouterLink>
+          <RouterLink :to="projectLink(featured.id)" class="e-read-link editorial-action">Read the project notes</RouterLink>
         </div>
       </section>
 
       <section id="e-work" class="e-work">
         <div class="e-section-title"><h2>Projects</h2></div>
         <div class="design-filter" aria-label="Filter projects">
-          <button v-for="category in categories" :key="category" :class="{active: filter === category}" :aria-pressed="filter === category" @click="filter = category">{{ category }}</button>
+          <button v-for="category in filters" :key="category" :class="{active: filter === category}" :aria-pressed="filter === category" @click="filter = category">{{ category }}</button>
         </div>
         <div class="e-projects">
           <article v-for="project in filtered" :key="project.id" class="e-project">
-            <RouterLink v-if="project.image" :to="projectLink('editorial', project.id)" class="e-project-image" tabindex="-1" aria-hidden="true">
+            <RouterLink v-if="project.image" :to="projectLink(project.id)" class="e-project-image" tabindex="-1" aria-hidden="true">
               <img :src="projectImage(project)" alt="" loading="lazy" />
             </RouterLink>
-            <h3><RouterLink :to="projectLink('editorial', project.id)">{{ project.name }}</RouterLink></h3>
+            <h3><RouterLink :to="projectLink(project.id)">{{ project.name }}</RouterLink></h3>
             <p>{{ project.summary }}</p>
           </article>
         </div>
@@ -68,7 +74,7 @@ const projectImage = project => project.id === featured.id ? '/design-assets/ima
         <div>
           <p>I study Computer Science and Mathematics at the University of Toronto. MidnightSky was also a business that supported me through university.</p>
           <p>I also go to hackathons with friends. We made FinHog at HackMIT, Clarify at GenAI, and Seascript at HackThe6ix.</p>
-          <a href="https://github.com/mattlack15" target="_blank" rel="noopener" class="e-read-link">GitHub</a>
+          <a href="https://github.com/mattlack15" target="_blank" rel="noopener" class="e-read-link editorial-action">GitHub</a>
         </div>
       </section>
     </main>
@@ -79,6 +85,7 @@ const projectImage = project => project.id === featured.id ? '/design-assets/ima
         <a href="/resume.pdf" target="_blank" rel="noopener">Resume</a>
         <a href="https://github.com/mattlack15" target="_blank" rel="noopener">GitHub</a>
         <a href="#">Back to top</a>
+        <RouterLink v-if="live" to="/editor" data-analytics-ignore>Edit</RouterLink>
       </div>
     </footer>
   </div>
@@ -95,11 +102,13 @@ const projectImage = project => project.id === featured.id ? '/design-assets/ima
   font-size: 17px;
   line-height: 1.55;
 }
-.editorial a { color: var(--editorial-link); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
-.editorial a:hover { text-decoration-thickness: 2px; }
+.editorial a:not(.editorial-action) { color: var(--editorial-link); text-decoration: underline; text-decoration-color: var(--editorial-underline); text-underline-offset: 4px; text-decoration-thickness: 1px; }
+.editorial a:not(.editorial-action):hover { text-decoration-color: currentColor; }
 .e-header { display: flex; align-items: baseline; justify-content: space-between; padding: 32px 0 26px; gap: 24px; }
-.editorial .e-brand { color: var(--ink); font-size: 23px; font-weight: 400; text-decoration: none; }
-.e-header nav { display: flex; gap: 32px; font-size: 16px; }
+.editorial a.e-brand { color: var(--ink); font-size: 23px; font-weight: 400; text-decoration: none; }
+.e-header nav { display: flex; align-items: center; gap: 28px; font-size: 16px; }
+.editorial .e-header nav a { text-decoration: none; }
+.editorial .e-header nav a:hover { text-decoration: underline; }
 .e-intro { display: grid; grid-template-columns: 22% 1fr; padding: 74px 0 66px; }
 .e-margin { padding-top: 7px; font-size: 15px; color: var(--editorial-muted); }
 .e-margin p { margin-top: 20px; line-height: 1.55; max-width: 230px; }
@@ -117,14 +126,16 @@ const projectImage = project => project.id === featured.id ? '/design-assets/ima
 .e-work { padding: 70px 0; scroll-margin-top: 24px; }
 .e-section-title { margin-bottom: 19px; }
 .e-section-title h2 { font-size: 29px; line-height: 1.3; font-weight: 400; }
-.design-filter { gap: 8px 26px; }
-.design-filter button { padding: 5px 0; border: 0; background: transparent; color: var(--editorial-link); font-size: 17px; border-radius: 0; text-decoration: underline; text-underline-offset: 3px; }
-.design-filter button:hover { text-decoration-thickness: 2px; }
-.design-filter button.active { background: transparent; color: var(--ink); font-weight: 400; text-decoration: none; }
+.design-filter { gap: 8px; }
+.design-filter button { padding: 7px 13px; border: 1px solid var(--editorial-border); background: var(--editorial-paper); color: var(--editorial-muted); font-size: 16px; border-radius: 6px; }
+.design-filter button:hover { background: var(--editorial-control); border-color: var(--editorial-underline); }
+.design-filter button.active { background: var(--ink); color: var(--paper); border-color: var(--ink); font-weight: 400; }
 .e-projects { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 38px; row-gap: 48px; margin-top: 38px; align-items: start; }
 .editorial .e-project-image { display: block; width: fit-content; max-width: 100%; margin-bottom: 18px; }
 .e-project-image img { width: auto; height: auto; max-height: 250px; max-width: 100%; object-fit: contain; object-position: left bottom; }
 .e-project h3 { font-size: 23px; line-height: 1.3; font-weight: 400; text-wrap: pretty; }
+.editorial .e-project h3 a { text-decoration: none; }
+.editorial .e-project h3 a:hover { text-decoration: underline; }
 .e-project p { margin-top: 12px; font-size: 17px; line-height: 1.55; text-wrap: pretty; }
 .e-about { display: grid; grid-template-columns: 1fr 1fr; gap: 8%; padding: 62px 0 72px; scroll-margin-top: 24px; }
 .e-about h2 { font-size: 29px; line-height: 1.3; font-weight: 400; }
@@ -138,8 +149,8 @@ const projectImage = project => project.id === featured.id ? '/design-assets/ima
 }
 @media (max-width: 700px) {
   .e-header { gap: 14px; padding: 24px 0; align-items: flex-start; }
-  .e-header nav { gap: 8px 20px; flex-wrap: wrap; justify-content: flex-end; font-size: 15px; max-width: 160px; }
-  .editorial .e-brand { font-size: 21px; white-space: nowrap; line-height: 1.25; }
+  .e-header nav { gap: 8px 18px; flex-wrap: wrap; justify-content: flex-end; font-size: 15px; max-width: 185px; }
+  .editorial a.e-brand { font-size: 21px; white-space: nowrap; line-height: 1.25; }
   .e-intro { grid-template-columns: 1fr; padding: 38px 0 44px; }
   .e-margin { padding: 0 0 28px; font-size: 15px; }
   .e-margin p { margin-top: 5px; max-width: none; }
@@ -153,7 +164,7 @@ const projectImage = project => project.id === featured.id ? '/design-assets/ima
   .e-project-image img { max-height: 330px; }
   .e-about { grid-template-columns: 1fr; gap: 24px; padding: 40px 0; }
   .e-about p { font-size: 18px; }
-  .design-filter { gap: 8px 23px; }
+  .design-filter { gap: 8px; }
 }
 @media (max-width: 380px) {
   .e-header { flex-direction: column; gap: 16px; }

@@ -1,19 +1,22 @@
 <script setup>
-import {computed} from 'vue';
+import {computed, onBeforeUnmount, watchEffect} from 'vue';
 import {useRoute} from 'vue-router';
 import {directions} from './content';
 import './editorial-type.css';
+import './theme';
 const route = useRoute();
-const current = computed(() => directions.find(d => d.id === route.params.direction));
+const current = computed(() => directions.find(d => d.id === (route.meta.portfolio ? 'editorial' : route.params.direction)));
+watchEffect(() => document.documentElement.classList.toggle('portfolio-page', current.value?.id === 'editorial'));
+onBeforeUnmount(() => document.documentElement.classList.remove('portfolio-page'));
 </script>
 
 <template>
   <div class="design-frame" :class="{'editorial-preview': current?.id === 'editorial'}">
-    <div v-if="current?.id === 'editorial'" class="review-bar editorial-review-bar" data-analytics-ignore>
+    <div v-if="!route.meta.portfolio && current?.id === 'editorial'" class="review-bar editorial-review-bar" data-analytics-ignore>
       <RouterLink to="/designs" class="review-back">Design previews</RouterLink>
       <span class="review-note">First design · Revision 3</span>
     </div>
-    <div v-else class="review-bar" data-analytics-ignore>
+    <div v-else-if="!route.meta.portfolio" class="review-bar" data-analytics-ignore>
       <RouterLink to="/designs" class="review-back">← All four designs</RouterLink>
       <nav aria-label="Design choices">
         <RouterLink v-for="d in directions" :key="d.id" :to="`/designs/${d.id}`" :class="{chosen: current?.id === d.id}" :aria-current="current?.id === d.id ? 'page' : undefined"><span>{{ d.number }}</span> {{ d.name }}</RouterLink>
@@ -40,7 +43,8 @@ const current = computed(() => directions.find(d => d.id === route.params.direct
 .review-bar nav span { opacity:.6; margin-right:4px; }
 .review-back { white-space:nowrap; }
 .review-note { margin-left:auto; color:#737373; white-space:nowrap; }
-.editorial-review-bar { border:0; background:#fff; font-family:var(--editorial-font); color:#555f65; }
+.editorial-review-bar { border:0; background:var(--editorial-paper); font-family:var(--editorial-font); color:var(--editorial-muted); }
+.editorial-review-bar .review-note { color:var(--editorial-muted); }
 .design-eyebrow { font:11px/1.5 'Courier New',monospace; text-transform:uppercase; letter-spacing:.13em; }
 .design-link { display:inline-flex; gap:18px; align-items:center; border-bottom:1px solid currentColor; padding-bottom:5px; font-size:14px; }
 .design-filter { display:flex; flex-wrap:wrap; gap:7px; }

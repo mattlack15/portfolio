@@ -9,12 +9,13 @@ import IndexDesign from './IndexDesign.vue';
 import {directions} from './content';
 const route=useRoute();
 const views={editorial:EditorialDesign,workbench:WorkbenchDesign,gallery:GalleryDesign,index:IndexDesign};
-const view=computed(()=>views[route.params.direction]);
-watchEffect(()=>{document.title=route.params.direction==='editorial'?'Matthew Lack | Portfolio preview':`Matthew Lack | ${directions.find(d=>d.id===route.params.direction)?.name || 'Design preview'}`;});
+const direction=computed(()=>route.meta.portfolio?'editorial':route.params.direction);
+const view=computed(()=>views[direction.value]);
+watchEffect(()=>{document.title=route.meta.portfolio?'Matthew Lack':direction.value==='editorial'?'Matthew Lack | Portfolio preview':`Matthew Lack | ${directions.find(d=>d.id===direction.value)?.name || 'Design preview'}`;});
 </script>
 <template>
   <DesignFrame>
-    <component v-if="view" :is="view" :key="route.params.direction" />
+    <component v-if="view" :is="view" :key="`${direction}:${Boolean(route.meta.portfolio)}`" />
     <main v-else class="unknown-design"><h1>Design not found</h1><RouterLink to="/designs">View the four choices →</RouterLink></main>
   </DesignFrame>
 </template>

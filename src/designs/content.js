@@ -1,4 +1,5 @@
 import snapshot from './projects.json';
+import {API_BASE} from '@/auth/api';
 
 const notes = {
   '1785866116116': ['Hardware', 'Reverse engineering an iPhone X display', "An ongoing attempt to control an iPhone X display with an RP2350. So far, I've built a logic analyzer and an interposer board to record the phone's display signals."],
@@ -20,10 +21,21 @@ const notes = {
   '1748838882885': ['Systems', 'Proximal Policy Optimization', 'A Java implementation of the PPO algorithm.'],
 };
 
-export const projects = snapshot.sort((a, b) => a.orderIndex - b.orderIndex).map(p => ({
-  ...p, category: notes[p.id]?.[0] || 'Software',
-  name: notes[p.id]?.[1] || p.title, summary: notes[p.id]?.[2] || p.brief,
-}));
+export function prepareProjects(data, live = false) {
+  return [...data].sort((a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0)).map(p => {
+    const saved = snapshot.find(item => item.id === p.id);
+    return {
+      ...p,
+      technologies: p.technologies || [],
+      description: p.description || '',
+      image: live ? (p.imageId === saved?.imageId ? saved?.image : p.imageId ? `${API_BASE}/api/images/${p.imageId}` : null) : p.image,
+      category: notes[p.id]?.[0] || 'Other',
+      name: p.title === saved?.title ? notes[p.id]?.[1] || p.title : p.title,
+      summary: p.brief === saved?.brief ? notes[p.id]?.[2] || p.brief : p.brief,
+    };
+  });
+}
+export const projects = prepareProjects(snapshot);
 export const categories = ['All', 'Hardware', 'Systems', 'Web', 'Mobile', 'Games', 'Graphics'];
 export const bio = "I'm a software developer in Toronto, studying Computer Science and Mathematics at the University of Toronto. My dad introduced me to programming, and I got started by making Minecraft plugins. Since then, I've built web applications, Android apps, game servers, and a few things that run on microcontrollers.";
 export const directions = [
@@ -33,4 +45,4 @@ export const directions = [
   {id: 'index', number: '04', name: 'Personal Index', short: 'A small, direct home on the web.', description: 'A compact personal introduction, followed by a searchable project index. It keeps the emphasis on what you have made and makes the entire collection easy to scan.', changes: ['A short personal introduction', 'A searchable, expandable project index', 'Small images and minimal decoration'], tradeoff: 'Best for fast scanning; has a quieter first impression.', color: '#263d33'},
 ];
 
-export const projectLink = (direction, id) => `/designs/${direction}/project/${id}`;
+export const projectLink = (direction, id, live = false) => live ? `/project/${id}` : `/designs/${direction}/project/${id}`;

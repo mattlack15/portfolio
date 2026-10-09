@@ -5,7 +5,8 @@ import PasskeyAuth from '@/components/PasskeyAuth.vue';
 import {API_BASE, withEditorSession} from '@/auth/api';
 
 const menu = ref([
-  { name: "Home", link: "/" },
+  { name: "Portfolio", link: "/" },
+  { name: "Projects", link: "/editor" },
 ]);
 
 const props = defineProps<{

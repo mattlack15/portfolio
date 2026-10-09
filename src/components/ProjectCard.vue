@@ -58,7 +58,7 @@ const removeTech = async (project: Project, tech: string) => {
 
 const cardClick = (id: string) => {
   if (editingId.value) return; // Don't navigate while editing
-  router.push({name: 'project', params: {id}});
+  router.push({name: router.currentRoute.value.path.startsWith('/editor') ? 'editor-project' : 'project', params: {id}});
 };
 
 const newTechInputs = ref<Record<string, string>>({});

@@ -1,7 +1,7 @@
-import {chromium, launchOptions, base} from './design-review/browser.mjs';
+import {chromium, launchOptions, base} from './browser.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
-import snapshot from '../src/designs/projects.json' with {type:'json'};
+import snapshot from '../src/portfolio/projects.json' with {type:'json'};
 
 const live = process.argv.includes('--live');
 const browser = await chromium.launch(launchOptions);
@@ -40,7 +40,7 @@ for (const width of [1440,768,390,320]) {
   assert.equal(await page.locator('.review-bar').count(),0);
   assert.equal(await page.locator('.e-project').count(),17);
   assert.equal(await page.locator('h1').count(),1);
-  assert.ok(await page.locator('.e-header').getByRole('button',{name:'Dark mode',exact:true}).isVisible());
+  assert.ok(await page.locator('.portfolio-header').getByRole('button',{name:'Dark mode',exact:true}).isVisible());
   const mode = page.getByRole('button',{name:'Dark mode',exact:true});
   // Verify light and dark render without changing page geometry.
   await page.evaluate(()=>localStorage.removeItem('portfolio-theme'));
@@ -50,8 +50,8 @@ for (const width of [1440,768,390,320]) {
   await page.screenshot({path:`${screenshots}-light-${width}.png`});
   await mode.click();
   assert.equal(await mode.getAttribute('aria-pressed'),'true');
-  assert.equal(await page.evaluate(()=>getComputedStyle(document.querySelector('.editorial')).backgroundColor),'rgb(25, 30, 34)');
-  assert.equal(await page.locator('.e-read-link').first().evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(37, 44, 49)');
+  assert.equal(await page.evaluate(()=>getComputedStyle(document.querySelector('.editorial')).backgroundColor),'rgb(11, 13, 15)');
+  assert.equal(await page.locator('.e-read-link').first().evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(21, 25, 29)');
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth > innerWidth),false);
   await page.screenshot({path:`${screenshots}-dark-${width}.png`});
   await page.reload({waitUntil:'networkidle'});
@@ -66,7 +66,7 @@ for (const width of [1440,768,390,320]) {
   assert.equal(await mode.getAttribute('aria-pressed'),'true');
   assert.ok(await page.getByRole('heading',{name:'RP2350 Logic Analyzer',exact:true}).isVisible());
   if (width === 1440) {
-    assert.ok(await page.locator('.dp-prose img').evaluateAll(async images => (await Promise.all(images.map(image=>image.decode().then(()=>true,()=>false)))).every(Boolean)), 'Article images must load');
+    assert.ok(await page.locator('.project-prose img').evaluateAll(async images => (await Promise.all(images.map(image=>image.decode().then(()=>true,()=>false)))).every(Boolean)), 'Article images must load');
   }
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth > innerWidth),false);
   await page.screenshot({path:`${screenshots}-project-dark-${width}.png`});
@@ -78,18 +78,22 @@ for (const width of [1440,768,390,320]) {
   checks.push(`Home and project at ${width}px: both themes, filters, keyboard navigation, persisted preference`);
 }
 await visit(page,'/project/1772491993559');
-assert.ok(await page.locator('.dp-prose').isVisible());
-assert.equal(await page.getByRole('link',{name:'Edit',exact:true}).getAttribute('href'),'/editor/project/1772491993559');
-await visit(page,'/editor');
+assert.ok(await page.locator('.project-prose').isVisible());
 await page.getByRole('button',{name:'Unlock editing',exact:true}).click();
-await page.getByRole('button',{name:'Close'}).waitFor();
+await page.getByRole('button',{name:'Close',exact:true}).waitFor();
 await page.keyboard.press('Escape');
-await page.locator('h3').filter({hasText:'Belfort Events'}).click();
-await page.waitForURL('**/editor/project/1772491993559');
+await visit(page,'/editor');
+assert.equal(new URL(page.url()).pathname,'/');
+await page.getByRole('link',{name:'Belfort Events',exact:true}).click();
+await page.waitForURL('**/project/1772491993559');
 await page.getByRole('heading',{name:'Belfort Events',exact:true}).waitFor();
+await visit(page,'/editor/project/1772491993559');
+assert.equal(new URL(page.url()).pathname,'/project/1772491993559');
+await visit(page,'/designs/editorial');
+assert.equal(new URL(page.url()).pathname,'/');
 await visit(page,'/analytics');
-await page.getByText('Use the key button to sign in.').waitFor();
-checks.push('Direct project links, editor login access, editor project route, analytics access');
+await page.getByText('Sign in to view analytics.').waitFor();
+checks.push('Sign-in on the portfolio itself, canonical redirects for old bookmarks, analytics access');
 await visit(page,'/project/missing');
 await page.getByRole('heading',{name:'Project not found',exact:true}).waitFor();
 await ctx.close();

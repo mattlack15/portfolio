@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import {onMounted, ref} from 'vue';
-import {Icon} from '@iconify/vue';
+import {onBeforeUnmount, onMounted, ref} from 'vue';
 import {API_BASE} from '@/auth/api';
 import {
   prepareCreationOptions,
@@ -94,53 +93,24 @@ const initialize = async () => {
   }
 };
 
-onMounted(initialize);
+function keydown(event) { if (event.key==='Escape') emits('close'); }
+onMounted(()=>{initialize();window.addEventListener('keydown',keydown);document.querySelector('.auth-dialog button')?.focus();});
+onBeforeUnmount(()=>window.removeEventListener('keydown',keydown));
 </script>
 
 <template>
-  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4" @click.self="emits('close')">
-    <div class="w-full max-w-sm rounded-xl border border-accent bg-surface p-6 text-white shadow-2xl">
-      <div class="mb-5 flex items-start justify-between gap-4">
-        <div>
-          <h2 class="text-xl font-semibold">{{ mode === 'setup' ? 'Set up passkey' : 'Unlock editing' }}</h2>
-          <p v-if="mode === 'setup'" class="mt-2 text-sm text-gray-400">
-            Create the passkey you’ll use to edit this portfolio.
-          </p>
-          <p v-else-if="mode === 'authenticating' || mode === 'loading'" class="mt-2 text-sm text-gray-400">
-            Follow your browser’s passkey prompt.
-          </p>
-        </div>
-        <button type="button" class="text-gray-400 transition hover:text-white" aria-label="Close" @click="emits('close')">
-          <Icon icon="material-symbols:close-rounded" class="text-xl" />
-        </button>
-      </div>
-
-      <div v-if="mode === 'loading' || mode === 'authenticating'" class="flex items-center gap-3 text-sm text-gray-300">
-        <Icon icon="svg-spinners:ring-resize" class="text-xl text-primary" />
-        Waiting for passkey…
-      </div>
-
-      <button
-        v-else-if="mode === 'setup'"
-        type="button"
-        class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 font-medium text-background transition hover:brightness-110"
-        @click="createPasskey"
-      >
-        <Icon icon="material-symbols:fingerprint" class="text-xl" />
-        Create passkey
-      </button>
-
-      <div v-else class="space-y-4">
-        <p class="text-sm text-red-400">{{ error }}</p>
-        <div class="flex justify-end gap-3">
-          <button type="button" class="rounded-lg border border-neutral px-4 py-2 text-sm text-gray-300" @click="emits('close')">
-            Cancel
-          </button>
-          <button type="button" class="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-background" @click="initialize">
-            Try again
-          </button>
-        </div>
-      </div>
-    </div>
+  <div class="auth-overlay editorial-preview" @click.self="emits('close')" data-analytics-ignore>
+    <section class="auth-dialog" role="dialog" aria-modal="true" aria-labelledby="auth-heading" @keydown.tab="event=>{const buttons=[...event.currentTarget.querySelectorAll('button')];if(event.shiftKey&&event.target===buttons[0]){event.preventDefault();buttons.at(-1)?.focus()}else if(!event.shiftKey&&event.target===buttons.at(-1)){event.preventDefault();buttons[0]?.focus()}}">
+      <header><h2 id="auth-heading">{{ mode==='setup'?'Set up passkey':'Unlock editing' }}</h2><button type="button" class="editorial-action" aria-label="Close" @click="emits('close')">Close</button></header>
+      <p v-if="mode==='setup'">Create the passkey you'll use to edit this portfolio.</p>
+      <p v-else-if="mode==='loading' || mode==='authenticating'" role="status">Follow your browser's passkey prompt.</p>
+      <button v-if="mode==='setup'" type="button" class="editorial-action" @click="createPasskey">Create passkey</button>
+      <template v-if="mode==='error'"><p role="alert">{{ error }}</p><div class="auth-actions"><button type="button" class="editorial-action" @click="emits('close')">Cancel</button><button type="button" class="editorial-action" @click="initialize">Try again</button></div></template>
+    </section>
   </div>
 </template>
+<style scoped>
+.auth-overlay { position:fixed; inset:0; z-index:200; display:grid; place-items:center; padding:24px; background:#0008; font:17px/1.6 var(--editorial-font); color:var(--editorial-ink); }
+.auth-dialog { width:100%; max-width:420px; padding:24px; background:var(--editorial-paper); border:1px solid var(--editorial-border); border-radius:10px; box-shadow:0 20px 60px #0005; }
+.auth-dialog header { display:flex; align-items:center; justify-content:space-between; gap:18px; }.auth-dialog h2 { margin:0; font-size:22px; font-weight:400; }.auth-dialog p { margin:20px 0; }.auth-dialog button { font-size:15px; }.auth-actions { display:flex; justify-content:flex-end; gap:12px; }
+</style>

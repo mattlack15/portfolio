@@ -1,14 +1,14 @@
 import {API_BASE} from './auth/api';
+import {useEditorAuth} from './auth/editor';
 
 export function installAnalytics(router) {
+  const {token}=useEditorAuth();
   let memoryVisitor = crypto.randomUUID();
   let memorySession = null;
   const read = (key) => { try { return localStorage.getItem(key); } catch { return null; } };
   const write = (key, value) => { try { localStorage.setItem(key, value); } catch { /* Storage can be disabled. */ } };
   const enabled = () => {
-    let editor = false;
-    try { editor = !!sessionStorage.getItem('portfolio-editor-session'); } catch { /* No storage. */ }
-    return !editor && navigator.doNotTrack !== '1' && !navigator.globalPrivacyControl &&
+    return !token.value && navigator.doNotTrack !== '1' && !navigator.globalPrivacyControl &&
       !location.pathname.startsWith('/analytics') && !location.pathname.startsWith('/editor') && !navigator.webdriver;
   };
   const identities = () => {

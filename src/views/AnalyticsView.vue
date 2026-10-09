@@ -1,6 +1,12 @@
 <script setup>
 import {computed, onUnmounted, ref, watch} from 'vue';
 import {API_BASE, withEditorSession} from '@/auth/api';
+import Header from '@/portfolio/Header.vue';
+import EditorIcon from '@/components/EditorIcon.vue';
+import EditorAccess from '@/portfolio/EditorAccess.vue';
+import {useEditorAuth} from '@/auth/editor';
+const {signIn,lock}=useEditorAuth();
+document.title='Analytics | Matthew Lack';
 
 const props = defineProps({authToken: {type: String, default: null}});
 const days = ref(7);
@@ -41,7 +47,8 @@ async function refresh() {
     const response = await fetch(`${API_BASE}/api/analytics/summary?days=${days.value}&timezone=${encodeURIComponent(timezone)}`, {
       headers: withEditorSession(props.authToken), signal: current.signal,
     });
-    if (!response.ok) throw new Error(response.status === 401 ? 'Sign in again to view analytics.' : 'Could not load analytics.');
+    if (response.status===401) { lock();return; }
+    if (!response.ok) throw new Error('Could not load analytics.');
     const result = await response.json();
     if (!current.signal.aborted) data.value = result;
   } catch (caught) {
@@ -55,15 +62,15 @@ onUnmounted(() => controller?.abort());
 </script>
 
 <template>
-  <main class="analytics" data-analytics-ignore>
-    <div v-if="!authToken" class="locked">Use the key button to sign in.</div>
+  <div class="portfolio-content"><Header /><main class="analytics" data-analytics-ignore><h1>Analytics</h1>
+    <div v-if="!authToken" class="locked"><p>Sign in to view analytics.</p><button class="editorial-action" @click="signIn">Sign in</button></div>
     <template v-else>
       <div class="toolbar">
         <div class="periods" aria-label="Date range">
           <button v-for="period in [{n: 1, label: 'Today'}, {n: 7, label: '7 days'}, {n: 30, label: '30 days'}, {n: 90, label: '90 days'}]"
             :key="period.n" :aria-pressed="days === period.n" :class="{active: days === period.n}" @click="days = period.n">{{ period.label }}</button>
         </div>
-        <button class="refresh" :disabled="loading" @click="refresh" aria-label="Refresh analytics"><Icon icon="material-symbols:refresh-rounded" :class="{spinning: loading}" /></button>
+        <button class="refresh" :disabled="loading" @click="refresh" aria-label="Refresh analytics"><EditorIcon name="refresh" :class="{spinning: loading}" /></button>
       </div>
       <p v-if="error" role="alert" class="error">{{ error }} <button @click="refresh">Retry</button></p>
       <div v-if="loading" role="status" class="loading">Loading…</div>
@@ -108,24 +115,25 @@ onUnmounted(() => controller?.abort());
         </section>
       </template>
     </template>
-  </main>
+  </main><footer class="design-footer"><span>Matthew Lack</span><div><RouterLink to="/">All projects</RouterLink><EditorAccess /></div></footer></div>
 </template>
 
 <style scoped>
-.analytics {max-width: 1200px; margin: 0 auto; padding: 0 28px 72px; color: #e5e5e5; font-family: inherit; font-size: 14px;}
+h1 { font-size:32px; font-weight:400; margin:32px 0!important; }.locked p { margin-bottom:18px; }
+.analytics {max-width: 1200px; margin: 0 auto; padding: 0 28px 72px; color: var(--editorial-ink); font-family: inherit; font-size: 14px;}
 .toolbar, .chart-toolbar {display: flex; justify-content: space-between; align-items: center; gap: 12px;}
-.toolbar {margin-bottom: 28px;}.periods {display: flex; gap: 4px; border: 1px solid #292929; border-radius: 9px; padding: 4px;}
-button {cursor: pointer;}button:focus-visible, a:focus-visible {outline: 2px solid #bbb; outline-offset: 3px;}
-.periods button, .metrics button {padding: 7px 13px; color: #929292; border-radius: 6px; transition: background .15s; white-space: nowrap;}
-.periods button.active {background: #282828; color: white;}.periods button:hover, .metrics button:hover {color: white;}
-.refresh {font-size: 22px; padding: 8px; color: #999;}.refresh:disabled {opacity: .5; cursor: wait;}
-.stats {display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid #292929; border-radius: 12px; overflow: hidden; margin-bottom: 20px;}
-.stat {padding: 24px 26px; border-right: 1px solid #292929;}.stat:last-child {border-right: 0;}.stat span {display: block; color: #999; margin-bottom: 12px;}.stat strong {font-size: 34px; letter-spacing: -1px; font-weight: 500; font-variant-numeric: tabular-nums;}
-.chart-panel, .table-panel {border: 1px solid #292929; border-radius: 12px; overflow: hidden; background: #101010;}
-.chart-panel {padding: 20px 24px; margin-bottom: 20px;}.chart-toolbar {margin-bottom: 26px; min-height: 34px;}.metrics {display: flex; gap: 4px;}.metrics button {padding: 4px 9px;}.metrics button.active {color: #eee; background: #262626;}.day-value {font-size: 12px; color: #aaa; font-variant-numeric: tabular-nums;}
-.chart {height: 190px; position: relative;}.gridlines {position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: space-between; pointer-events: none;}.gridlines span {border-bottom: 1px solid #252525; color: #666; font-size: 11px; line-height: 0; text-align: right; padding-right: 0;}
-.bars {display: flex; gap: clamp(2px, .5vw, 7px); align-items: end; position: absolute; inset: 0 35px 0 0;}.bar-hit {flex: 1; height: 100%; display: flex; align-items: end; justify-content: center; min-width: 0;}.bar {display: block; width: 100%; max-width: 72px; background: #b9c6bd; border-radius: 3px 3px 0 0;}.bar-hit:hover .bar, .bar-hit:focus .bar {background: #eff5f0;}.axis {display: flex; justify-content: space-between; margin-top: 12px; padding-right: 35px; color: #777; font-size: 12px;}
-.tables {display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;}table {width: 100%; border-collapse: collapse; text-align: left; table-layout: fixed;}th {font-weight: 500; color: #aaa; font-size: 12px; padding: 17px 22px; border-bottom: 1px solid #292929;}td {padding: 13px 22px; border-bottom: 1px solid #202020; overflow-wrap: anywhere; font-size: 13px;}tr:last-child td {border-bottom: 0;}th:last-child, td:last-child {text-align: right; width: 80px; font-variant-numeric: tabular-nums;}td small {display: block; color: #727272; font-size: 11px; margin-top: 3px;}.empty {color: #666; height: 100px; text-align: center !important;}.attribution {display: block; padding: 12px 22px; font-size: 10px; color: #666; border-top: 1px solid #202020;}.attribution:hover {color: #aaa;}.recent {overflow-x: auto;}.recent table {min-width: 660px;}.recent th:first-child {width: 145px;}.recent th:last-child {width: 155px;}.recent th:nth-child(3) {width: 26%;}.time {color: #888; font-size: 12px;}.dot {display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #b9c6bd; margin-right: 9px;}.dot.clicked {background: #b0a0cc;}.locked, .loading {padding: 60px 0; text-align: center; color: #888;}.error {color: #e7a19a; padding: 14px 0;}.error button {text-decoration: underline; margin-left: 8px;}.spinning {animation: spin 1s linear infinite;}@keyframes spin {to {transform: rotate(360deg);}}
-@media(max-width: 640px) {.analytics {padding: 0 16px 40px;}.stats {grid-template-columns: 1fr 1fr;}.stat {padding: 18px;}.stat:nth-child(2) {border-right: 0;}.stat:nth-child(-n+2) {border-bottom: 1px solid #292929;}.stat strong {font-size: 28px;}.tables {grid-template-columns: 1fr;}.chart-panel {padding: 16px 12px;}.chart-toolbar {flex-wrap: wrap;}.chart {height: 160px;}.periods button {padding: 6px 10px;}.day-value {min-height: 16px;}.stat span {font-size: 12px;}}
+.toolbar {margin-bottom: 28px;}.periods {display: flex; gap: 4px; border: 1px solid var(--editorial-border); border-radius: 9px; padding: 4px;}
+button {cursor: pointer;}button:focus-visible, a:focus-visible {outline: 2px solid var(--editorial-link); outline-offset: 3px;}
+.periods button, .metrics button {padding: 7px 13px; color: var(--editorial-muted); border-radius: 6px; transition: background .15s; white-space: nowrap;}
+.periods button.active {background: var(--editorial-control-hover); color:var(--editorial-ink);}.periods button:hover, .metrics button:hover {color:var(--editorial-ink);}
+.refresh {font-size: 22px; padding: 8px; color: var(--editorial-muted);}.refresh:disabled {opacity: .5; cursor: wait;}
+.stats {display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--editorial-border); border-radius: 12px; overflow: hidden; margin-bottom: 20px;}
+.stat {padding: 24px 26px; border-right: 1px solid var(--editorial-border);}.stat:last-child {border-right: 0;}.stat span {display: block; color: var(--editorial-muted); margin-bottom: 12px;}.stat strong {font-size: 34px; letter-spacing: -1px; font-weight: 500; font-variant-numeric: tabular-nums;}
+.chart-panel, .table-panel {border: 1px solid var(--editorial-border); border-radius: 12px; overflow: hidden; background: var(--editorial-control);}
+.chart-panel {padding: 20px 24px; margin-bottom: 20px;}.chart-toolbar {margin-bottom: 26px; min-height: 34px;}.metrics {display: flex; gap: 4px;}.metrics button {padding: 4px 9px;}.metrics button.active {color: var(--editorial-ink); background: var(--editorial-control-hover);}.day-value {font-size: 12px; color: var(--editorial-muted); font-variant-numeric: tabular-nums;}
+.chart {height: 190px; position: relative;}.gridlines {position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: space-between; pointer-events: none;}.gridlines span {border-bottom: 1px solid var(--editorial-border); color: var(--editorial-muted); font-size: 11px; line-height: 0; text-align: right; padding-right: 0;}
+.bars {display: flex; gap: clamp(2px, .5vw, 7px); align-items: end; position: absolute; inset: 0 35px 0 0;}.bar-hit {flex: 1; height: 100%; display: flex; align-items: end; justify-content: center; min-width: 0;}.bar {display: block; width: 100%; max-width: 72px; background: var(--editorial-muted); border-radius: 3px 3px 0 0;}.bar-hit:hover .bar, .bar-hit:focus .bar {background: var(--editorial-ink);}.axis {display: flex; justify-content: space-between; margin-top: 12px; padding-right: 35px; color: var(--editorial-muted); font-size: 12px;}
+.tables {display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;}table {width: 100%; border-collapse: collapse; text-align: left; table-layout: fixed;}th {font-weight: 500; color: var(--editorial-muted); font-size: 12px; padding: 17px 22px; border-bottom: 1px solid var(--editorial-border);}td {padding: 13px 22px; border-bottom: 1px solid var(--editorial-border); overflow-wrap: anywhere; font-size: 13px;}tr:last-child td {border-bottom: 0;}th:last-child, td:last-child {text-align: right; width: 80px; font-variant-numeric: tabular-nums;}td small {display: block; color: var(--editorial-muted); font-size: 11px; margin-top: 3px;}.empty {color: var(--editorial-muted); height: 100px; text-align: center !important;}.attribution {display: block; padding: 12px 22px; font-size: 10px; color: var(--editorial-muted); border-top: 1px solid var(--editorial-border);}.attribution:hover {color: var(--editorial-muted);}.recent {overflow-x: auto;}.recent table {min-width: 660px;}.recent th:first-child {width: 145px;}.recent th:last-child {width: 155px;}.recent th:nth-child(3) {width: 26%;}.time {color: var(--editorial-muted); font-size: 12px;}.dot {display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--editorial-muted); margin-right: 9px;}.dot.clicked {background: var(--editorial-ink);}.locked, .loading {padding: 60px 0; text-align: center; color: var(--editorial-muted);}.error {color: var(--editorial-ink); padding: 14px 0;}.error button {text-decoration: underline; margin-left: 8px;}.spinning {animation: spin 1s linear infinite;}@keyframes spin {to {transform: rotate(360deg);}}
+@media(max-width: 640px) {.analytics {padding: 0 16px 40px;}.stats {grid-template-columns: 1fr 1fr;}.stat {padding: 18px;}.stat:nth-child(2) {border-right: 0;}.stat:nth-child(-n+2) {border-bottom: 1px solid var(--editorial-border);}.stat strong {font-size: 28px;}.tables {grid-template-columns: 1fr;}.chart-panel {padding: 16px 12px;}.chart-toolbar {flex-wrap: wrap;}.chart {height: 160px;}.periods button {padding: 6px 10px;}.day-value {min-height: 16px;}.stat span {font-size: 12px;}}
 @media(prefers-reduced-motion: reduce) {.spinning {animation: none;}}
 </style>

@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="736" height="480" viewBox="0 0 736 480" role="img" aria-labelledby="rc-title rc-desc">
+  <style>
+    { width: 100%; color: #f2f4f7; background: transparent; }
+    .diagram-wrap { width: min(100%, 736px); margin: 0 auto; }
+    svg { display: block; width: 100%; height: auto; }
+    text {
+      fill: #f2f4f7;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-weight: 400;
+    }
+    .label { font-size: 13px; font-weight: 500; }
+    .small { font-size: 11px; }
+    .muted { fill: #9ca3ad; }
+    .structure,
+    .annotation,
+    .signal,
+    .hs,
+    .filtered {
+      fill: none;
+      vector-effect: non-scaling-stroke;
+    }
+    .structure { stroke: #353b43; stroke-width: 1.5; }
+    .annotation { stroke: #9ca3ad; stroke-width: 1; stroke-dasharray: 3 4; }
+    .signal { stroke: #73bdff; stroke-width: 2.5; }
+    .hs { stroke: #fa984f; stroke-width: 2; }
+    .filtered { stroke: #5dd98b; stroke-width: 2.5; }
+    .tap-dot { fill: #73bdff; }
+    .device { fill: #20242a; stroke: #353b43; stroke-width: 1.5; }
+  </style>
+  <rect width="736" height="480" fill="#17191b" />
+      <title id="rc-title">Resistive tap and RC low-pass filtering</title>
+      <desc id="rc-desc">A one-kilohm resistor close to a tapped signal line isolates an analyzer branch. The resistor and downstream capacitance form a low-pass filter that preserves slower low-power edges while suppressing high-speed traffic.</desc>
+
+      <defs>
+        <marker id="rc-arrow-muted" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0 0 L8 4 L0 8 Z" fill="#9ca3ad" />
+        </marker>
+        <marker id="rc-arrow-signal" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M0 0 L8 4 L0 8 Z" fill="#73bdff" />
+        </marker>
+      </defs>
+
+      <text class="label" x="42" y="34">TAPPED SIGNAL LINE</text>
+      <text class="small muted" x="694" y="34" text-anchor="end">continues to rest of circuit</text>
+      <line class="signal" x1="42" y1="70" x2="694" y2="70" marker-end="url(#rc-arrow-signal)" />
+      <circle class="tap-dot" cx="150" cy="70" r="5" />
+
+      <line class="signal" x1="150" y1="70" x2="150" y2="140" />
+      <line class="signal" x1="150" y1="140" x2="170" y2="140" />
+      <polyline class="signal" points="170,140 180,128 194,152 208,128 222,152 236,128 250,140" />
+      <line class="signal" x1="250" y1="140" x2="580" y2="140" />
+
+      <text class="label" x="210" y="112" text-anchor="middle">1 kΩ</text>
+      <text class="small muted" x="159" y="99">very short stub</text>
+      <path class="annotation" d="M177 104 L177 122" marker-end="url(#rc-arrow-muted)" />
+      <text class="small muted" x="370" y="125" text-anchor="middle">few-mm copper trace</text>
+
+      <rect class="device" x="580" y="114" width="126" height="52" rx="5" />
+      <text class="label" x="643" y="136" text-anchor="middle">ANALYZER</text>
+      <text class="small muted" x="643" y="152" text-anchor="middle">high-Z input</text>
+
+      <line class="structure" x1="470" y1="140" x2="470" y2="171" />
+      <line class="structure" x1="454" y1="171" x2="486" y2="171" />
+      <line class="structure" x1="454" y1="180" x2="486" y2="180" />
+      <line class="structure" x1="470" y1="180" x2="470" y2="202" />
+      <line class="structure" x1="456" y1="202" x2="484" y2="202" />
+      <line class="structure" x1="461" y1="208" x2="479" y2="208" />
+      <line class="structure" x1="466" y1="214" x2="474" y2="214" />
+      <text class="small muted" x="494" y="183">trace + input C</text>
+
+      <line class="annotation" x1="240" y1="174" x2="160" y2="174" marker-end="url(#rc-arrow-muted)" />
+      <text class="small muted" x="156" y="194">short reflection delay → roughly in-phase</text>
+      <text class="label" x="706" y="210" text-anchor="end">RC LOW-PASS</text>
+      <text class="small muted" x="706" y="226" text-anchor="end">tᵣ ≈ 2.2RC &lt; 10 ns</text>
+
+      <line class="structure" x1="42" y1="248" x2="706" y2="248" />
+
+      <text class="label" x="142" y="301" text-anchor="end">Tapped line</text>
+      <text class="small muted" x="142" y="317" text-anchor="end">LP states + HS burst</text>
+      <line class="structure" x1="160" y1="345" x2="700" y2="345" />
+      <path class="signal" d="M160 280 L280 280 L300 345 L330 345 M530 345 L550 345 L570 280 L700 280" />
+      <path class="hs" d="M330 345 L330 334 L338 323 L346 334 L354 323 L362 334 L370 323 L378 334 L386 323 L394 334 L402 323 L410 334 L418 323 L426 334 L434 323 L442 334 L450 323 L458 334 L466 323 L474 334 L482 323 L490 334 L498 323 L506 334 L514 323 L522 334 L530 323 L530 345" />
+      <text class="small muted" x="220" y="266" text-anchor="middle">LP high ≈ 1.2 V</text>
+      <text class="small muted" x="430" y="307" text-anchor="middle">HS burst ≈ 200–400 mV</text>
+
+      <line class="annotation" x1="300" y1="365" x2="570" y2="365" marker-start="url(#rc-arrow-muted)" marker-end="url(#rc-arrow-muted)" />
+      <text class="small muted" x="435" y="380" text-anchor="middle">LP edges 50 ns apart</text>
+
+      <text class="label" x="142" y="406" text-anchor="end">Analyzer</text>
+      <text class="small muted" x="142" y="422" text-anchor="end">HS burst suppressed</text>
+      <line class="structure" x1="160" y1="445" x2="700" y2="445" />
+      <path class="filtered" d="M160 385 L275 385 C290 385 300 390 308 405 C316 420 324 440 342 445 L530 445 C548 440 556 420 564 405 C572 390 582 385 598 385 L700 385" />
+    </svg>

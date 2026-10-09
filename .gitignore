@@ -33,3 +33,7 @@ api/build/
 
 # Downloaded IP-location database
 api/data/
+
+# Python bytecode
+__pycache__/
+*.py[cod]

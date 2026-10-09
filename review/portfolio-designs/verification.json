@@ -1,0 +1,169 @@
+{
+  "date": "2026-10-09",
+  "browser": "Chromium",
+  "checks": [
+    {
+      "path": "/designs/editorial",
+      "width": 1440,
+      "result": "pass"
+    },
+    {
+      "path": "/designs/editorial",
+      "width": 768,
+      "result": "pass"
+    },
+    {
+      "path": "/designs/editorial",
+      "width": 390,
+      "result": "pass"
+    },
+    {
+      "path": "/designs/editorial",
+      "width": 320,
+      "result": "pass"
+    },
+    {
+      "path": "/designs/editorial/project/1785866116116",
+      "width": 390,
+      "result": "pass"
+    },
+    {
+      "path": "/designs/editorial/project/1748549972604",
+      "width": 1440,
+      "result": "pass"
+    },
+    {
+      "path": "/designs/workbench",
+      "width": 1440,
+      "result": "pass"
+    },
+    {
+      "path": "/designs/workbench",
+      "width": 768,
+      "result": "pass"
+    },
+    {
+      "path": "/designs/workbench",
+      "width": 390,
+      "result": "pass"
+    },
+    {
+      "path": "/designs/workbench",
+      "width": 320,
+      "result": "pass"
+    },
+    {
+      "path": "/designs/workbench/project/1785866116116",
+      "width": 390,
+      "result": "pass"
+    },
+    {
+      "path": "/designs/workbench/project/1748549972604",
+      "width": 1440,
+      "result": "pass"
+    },
+    {
+      "path": "/designs/gallery",
+      "width": 1440,
+      "result": "pass"
+    },
+    {
+      "path": "/designs/gallery",
+      "width": 768,
+      "result": "pass"
+    },
+    {
+      "path": "/designs/gallery",
+      "width": 390,
+      "result": "pass"
+    },
+    {
+      "path": "/designs/gallery",
+      "width": 320,
+      "result": "pass"
+    },
+    {
+      "path": "/designs/gallery/project/1785866116116",
+      "width": 390,
+      "result": "pass"
+    },
+    {
+      "path": "/designs/gallery/project/1748549972604",
+      "width": 1440,
+      "result": "pass"
+    },
+    {
+      "path": "/designs/index",
+      "width": 1440,
+      "result": "pass"
+    },
+    {
+      "path": "/designs/index",
+      "width": 768,
+      "result": "pass"
+    },
+    {
+      "path": "/designs/index",
+      "width": 390,
+      "result": "pass"
+    },
+    {
+      "path": "/designs/index",
+      "width": 320,
+      "result": "pass"
+    },
+    {
+      "path": "/designs/index/project/1785866116116",
+      "width": 390,
+      "result": "pass"
+    },
+    {
+      "path": "/designs/index/project/1748549972604",
+      "width": 1440,
+      "result": "pass"
+    },
+    {
+      "path": "/designs",
+      "width": 1440,
+      "result": "pass"
+    },
+    {
+      "path": "/designs",
+      "width": 390,
+      "result": "pass"
+    },
+    {
+      "behavior": "Editorial filter, project link, and return navigation",
+      "result": "pass"
+    },
+    {
+      "behavior": "Gallery category filtering",
+      "result": "pass"
+    },
+    {
+      "behavior": "Workbench project selection, stack tab, and filter selection reset",
+      "result": "pass"
+    },
+    {
+      "behavior": "Index technology search, expansion, empty state, and reset",
+      "result": "pass"
+    },
+    {
+      "behavior": "All four videos load, and the first video decodes after seeking",
+      "result": "pass"
+    },
+    {
+      "behavior": "Research tab and keyboard navigation",
+      "result": "pass"
+    },
+    {
+      "behavior": "Missing writeup, missing project, and missing design states",
+      "result": "pass"
+    },
+    {
+      "behavior": "Original homepage preserved and populated from the local snapshot",
+      "result": "pass"
+    }
+  ],
+  "errors": []
+}

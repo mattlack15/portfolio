@@ -1,0 +1,36 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.210
+BEFORE / CURRENT SITE
+The current homepage introduces skills before the project collection.
+
+2
+00:00:05.210 --> 00:00:09.800
+02 / WORKBENCH
+A project explorer with a sidebar and an inspection pane.
+
+3
+00:00:09.800 --> 00:00:15.121
+PROJECT INSPECTION
+Select a project without leaving the collection.
+
+4
+00:00:15.121 --> 00:00:22.893
+THE TECHNOLOGY STACK
+Inspect the actual technology stack, then narrow the project list.
+
+5
+00:00:22.893 --> 00:00:30.339
+THE COMPLETE PROJECT
+Open the complete writeup when you want more detail.
+
+6
+00:00:30.339 --> 00:00:32.079
+DESKTOP / WORKBENCH
+A complete local preview, with the actual projects and their longer writeups.
+
+7
+00:00:32.079 --> 00:00:48.500
+MOBILE / 390 PX
+Workbench on a phone. The sidebar becomes a header. A compact, scrollable explorer. The inspection pane sits below. Overview and stack tabs remain.

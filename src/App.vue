@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import NavBar from "@/components/NavBar.vue";
-import {onMounted, ref} from "vue";
+import {computed, onMounted, ref} from "vue";
+import {useRoute} from 'vue-router';
 import {API_BASE, withEditorSession} from '@/auth/api';
 
 const storageKey = 'portfolio-editor-session';
+const route = useRoute();
+const isDesignPreview = computed(() => route.path === '/designs' || route.path.startsWith('/designs/'));
 const editorToken = ref<string | null>(sessionStorage.getItem(storageKey));
 
 const updateEditorToken = (token: string | null) => {
@@ -23,10 +26,11 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="bg-background fixed w-full z-50">
+  <RouterView v-if="isDesignPreview" />
+  <div v-if="!isDesignPreview" class="bg-background fixed w-full z-50">
     <NavBar :auth-token="editorToken" @update="updateEditorToken" />
   </div>
-  <div class="bg-background min-h-screen pt-32">
+  <div v-if="!isDesignPreview" class="bg-background min-h-screen pt-32">
     <RouterView v-slot="{ Component }">
       <component v-if="Component" :is="Component" :auth-token="editorToken" />
     </RouterView>

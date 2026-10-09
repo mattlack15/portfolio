@@ -12,7 +12,7 @@ For the production preview:
   Open http://127.0.0.1:4173/designs
 
 Routes:
-  /designs/editorial  Field Notes
+  /designs/editorial  First design (revision 2)
   /designs/workbench  Workbench
   /designs/gallery    Gallery
   /designs/index      Personal Index
@@ -41,3 +41,10 @@ Build again after generating screenshots or videos so Vite copies them into dist
 The portable HTML also reads the files directly from public/design-assets.
 
 Existing work was committed first as c1e04e1.
+
+REVISION 2
+The first layout is retained. Its typography uses the system font, slogan headings
+are replaced with direct headings, and decorative accents and rules are removed.
+Open editorial-revision2.html for the before-and-after review and updated demo.
+The previous screenshot and video are preserved as editorial-v1.
+To re-record only this design: node scripts/design-review/record.mjs --only editorial

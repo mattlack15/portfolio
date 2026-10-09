@@ -40,7 +40,7 @@ assert.equal(await page.locator('.e-project').count(),2);
 await page.locator('.e-project').first().click();
 await page.waitForURL('**/project/**');
 assert.match(page.url(),/\/project\//);
-await page.getByRole('link',{name:'Back to Field Notes'}).click();
+await page.getByRole('link',{name:'Back to projects'}).click();
 await page.waitForURL('**/designs/editorial');
 assert.equal(new URL(page.url()).pathname,'/designs/editorial');
 checks.push({behavior:'Editorial filter, project link, and return navigation',result:'pass'});

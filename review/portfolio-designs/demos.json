@@ -1,20 +1,20 @@
 [
   {
     "id": "editorial",
-    "name": "Field Notes",
+    "name": "First design",
     "number": "01",
-    "mobile": [
-      "A single-column reading order",
-      "Real project photographs",
-      "Filters remain available",
-      "Full writeups and resume links"
-    ],
-    "duration": 44.433333,
+    "duration": 45.333008,
     "changes": [
-      "Warm paper, serif type, and your projects at the front.",
-      "The display investigation leads with a real board photograph.",
-      "Filter the collection by the kind of work you want to see.",
-      "The full technical writeup has a quieter, readable layout."
+      "The same layout, with a system font and a direct introduction.",
+      "The heading names the project. The divider rules and colored accents are gone.",
+      "The project arrangement is unchanged. Filters use plain text.",
+      "The system font and simpler styling continue into the project writeup."
+    ],
+    "mobile": [
+      "The original layout is retained",
+      "Headings use the system font",
+      "No decorative rules or accents",
+      "The same project filters and links"
     ]
   },
   {
@@ -63,7 +63,7 @@
       "Rows expand below their titles",
       "Images stay with the summaries"
     ],
-    "duration": 47.0,
+    "duration": 47,
     "changes": [
       "A brief personal introduction and a compact index of all 17 projects.",
       "Expand a project to see its image, summary, and technologies.",

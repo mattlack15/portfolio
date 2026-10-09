@@ -5,7 +5,7 @@ import {spawnSync} from 'node:child_process';
 import snapshot from '../../src/designs/projects.json' with {type:'json'};
 
 const specs = [
-  {id:'editorial',name:'Field Notes',number:'01',intro:'Warm paper, serif type, and your projects at the front.',focus:'The display investigation leads with a real board photograph.',interaction:'Filter the collection by the kind of work you want to see.',detail:'The full technical writeup has a quieter, readable layout.',mobile:['A single-column reading order','Real project photographs','Filters remain available','Full writeups and resume links']},
+  {id:'editorial',name:'First design',number:'01',intro:'The same layout, with a system font and a direct introduction.',focus:'The heading names the project. The divider rules and colored accents are gone.',interaction:'The project arrangement is unchanged. Filters use plain text.',detail:'The system font and simpler styling continue into the project writeup.',mobile:['The original layout is retained','Headings use the system font','No decorative rules or accents','The same project filters and links']},
   {id:'workbench',name:'Workbench',number:'02',intro:'A project explorer with a sidebar and an inspection pane.',focus:'Select a project without leaving the collection.',interaction:'Inspect the actual technology stack, then narrow the project list.',detail:'Open the complete writeup when you want more detail.',mobile:['The sidebar becomes a header','A compact, scrollable explorer','The inspection pane sits below','Overview and stack tabs remain']},
   {id:'gallery',name:'Gallery',number:'03',intro:'A blue masthead, large typography, and a gallery of real project images.',focus:'Different image sizes give the work room to breathe.',interaction:'Browse a project type, with short captions beside the screenshots.',detail:'Each project opens into its own page with the full writeup.',mobile:['The masthead scales down','Images stack in one column','Project types remain available','The full writeups still follow']},
   {id:'index',name:'Personal Index',number:'04',intro:'A brief personal introduction and a compact index of all 17 projects.',focus:'Expand a project to see its image, summary, and technologies.',interaction:'Search by name or technology; the list narrows as you type.',detail:'Open a full project page from an expanded row.',mobile:['Small, direct navigation','Search works at phone widths','Rows expand below their titles','Images stay with the summaries']},
@@ -34,7 +34,13 @@ async function record(spec) {
   const origin=Date.now();
   const page=await context.newPage();
   await localBaseline(page);
-  await page.goto(base,{waitUntil:'networkidle'});
+  if(spec.id==='editorial') {
+    await page.goto(`${base}/designs/editorial`,{waitUntil:'networkidle'});
+    await page.setContent(`<html><body style="margin:0;background:#f4f1e8"><img src="${base}/design-assets/previews/editorial-v1.jpg" alt="Previous draft screenshot" style="display:block;width:100%"></body></html>`,{waitUntil:'domcontentloaded'});
+    await page.waitForFunction(()=>document.querySelector('img').complete&&document.querySelector('img').naturalWidth>0);
+  } else {
+    await page.goto(base,{waitUntil:'networkidle'});
+  }
   let start=Date.now();
   const desktopOffset=(start-origin)/1000;
   const cues=[];
@@ -46,7 +52,7 @@ async function record(spec) {
       let bar=document.getElementById('portfolio-demo-caption');
       if(!bar){
         const style=document.createElement('style');
-        style.textContent='#portfolio-demo-caption{position:fixed;bottom:0;left:0;right:0;z-index:999999;background:#142018f5;color:#f5f6ef;padding:14px 30px 17px;pointer-events:none;font:18px/1.5 Arial,sans-serif;border-top:1px solid #75856c}#portfolio-demo-caption strong{display:block;color:#b9d6ad;font:10px/1.5 Courier New,monospace;letter-spacing:.14em;margin-bottom:5px}#portfolio-demo-cursor{position:fixed;top:-40px;left:-40px;width:17px;height:17px;border:2px solid #517349;border-radius:50%;background:#d5e9c9aa;pointer-events:none;z-index:999998;box-shadow:0 0 0 2px #fff8;transform:translate(-50%,-50%)}';
+        style.textContent='#portfolio-demo-caption{position:fixed;bottom:0;left:0;right:0;z-index:999999;background:#181818f5;color:#f5f6ef;padding:14px 30px 17px;pointer-events:none;font:18px/1.5 Arial,sans-serif;border:0}#portfolio-demo-caption strong{display:block;color:#bdbdbd;font:12px/1.5 Arial,sans-serif;letter-spacing:0;margin-bottom:5px}#portfolio-demo-cursor{position:fixed;top:-40px;left:-40px;width:17px;height:17px;border:2px solid #252525;border-radius:50%;background:#ffffff88;pointer-events:none;z-index:999998;box-shadow:0 0 0 2px #fff8;transform:translate(-50%,-50%)}';
         document.head.append(style);bar=document.createElement('div');bar.id='portfolio-demo-caption';document.body.append(bar);
         const cursor=document.createElement('div');cursor.id='portfolio-demo-cursor';document.body.append(cursor);
         document.addEventListener('mousemove',e=>{cursor.style.left=e.clientX+'px';cursor.style.top=e.clientY+'px';});
@@ -60,9 +66,14 @@ async function record(spec) {
     await hold(750);
   }
   async function click(locator) {await locator.hover();await hold(450);await locator.click();await hold(350);}
-  await caption('BEFORE / CURRENT SITE','The current homepage introduces skills before the project collection.');
-  await hold(2400);
-  await scrollTo('#services');await hold(1600);
+  if(spec.id==='editorial') {
+    await caption('BEFORE / PREVIOUS DRAFT SCREENSHOT','The earlier draft used serif type, slogans, color accents, and decorative rules.');
+    await hold(4000);
+  } else {
+    await caption('BEFORE / CURRENT SITE','The current homepage introduces skills before the project collection.');
+    await hold(2400);
+    await scrollTo('#services');await hold(1600);
+  }
   await page.goto(`${base}/designs/${spec.id}`,{waitUntil:'networkidle'});
   await caption(`${spec.number} / ${spec.name.toUpperCase()}`,spec.intro);await hold(4000);
 
@@ -137,10 +148,14 @@ async function record(spec) {
   return metadata;
 }
 
+const onlyIndex=process.argv.indexOf('--only');
+const selectedSpecs=onlyIndex<0?specs:specs.filter(spec=>spec.id===process.argv[onlyIndex+1]);
+if(!selectedSpecs.length)throw new Error('Choose a known design for --only.');
 const results=[];
-for(let i=0;i<specs.length;i+=2)results.push(...await Promise.all(specs.slice(i,i+2).map(record)));
+for(let i=0;i<selectedSpecs.length;i+=2)results.push(...await Promise.all(selectedSpecs.slice(i,i+2).map(record)));
 await browser.close();
-const exported=[];
+const priorExports=await fs.readFile('review/portfolio-designs/demos.json','utf8').then(JSON.parse,()=>[]);
+const exported=priorExports.filter(spec=>!selectedSpecs.some(selected=>selected.id===spec.id));
 for(const result of results) {
   const metadata=path.join(temp,result.id,'metadata.json');
   const panel=path.join(temp,result.id,'mobile-panel.png');
@@ -162,5 +177,5 @@ for(const result of results) {
   exported.push({id:result.id,name:result.name,number:result.number,duration,changes:[result.intro,result.focus,result.interaction,result.detail],mobile:result.mobile});
   console.log(`Exported ${output} (${duration.toFixed(1)} seconds).`);
 }
-await fs.writeFile('review/portfolio-designs/demos.json',JSON.stringify(exported,null,2)+'\n');
+await fs.writeFile('review/portfolio-designs/demos.json',JSON.stringify(exported.sort((a,b)=>a.number.localeCompare(b.number)),null,2)+'\n');
 console.log(`Source recordings: ${temp}`);

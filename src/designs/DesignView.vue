@@ -10,7 +10,7 @@ import {directions} from './content';
 const route=useRoute();
 const views={editorial:EditorialDesign,workbench:WorkbenchDesign,gallery:GalleryDesign,index:IndexDesign};
 const view=computed(()=>views[route.params.direction]);
-watchEffect(()=>{document.title=`Matthew Lack | ${directions.find(d=>d.id===route.params.direction)?.name || 'Design preview'}`;});
+watchEffect(()=>{document.title=route.params.direction==='editorial'?'Matthew Lack | Portfolio preview':`Matthew Lack | ${directions.find(d=>d.id===route.params.direction)?.name || 'Design preview'}`;});
 </script>
 <template>
   <DesignFrame>

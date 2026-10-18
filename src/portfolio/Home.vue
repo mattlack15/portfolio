@@ -40,13 +40,13 @@ const featureSummary=computed(()=>featured.value?.brief===originalFeature.brief 
         <div class="e-intro-copy">
           <h1>I'm Matt, a programmer in Toronto.</h1>
           <p>My dad introduced me to programming when I was young. I started making Minecraft plugins, then built and ran a server network called MidnightSky. More recently, I've been working on web apps and learning about electronics.</p>
-          <a href="https://github.com/mattlack15" target="_blank" rel="noopener" class="e-read-link editorial-action">GitHub</a>
+          <a href="https://github.com/mattlack15" target="_blank" rel="noopener" class="e-read-link editorial-action" data-analytics-label="GitHub">GitHub</a>
         </div>
       </section>
 
       <section v-if="featured" class="e-feature" :class="{'e-feature-text':!featured.image}" aria-labelledby="e-feature-title">
         <figure v-if="featured.image" class="e-feature-photo">
-          <RouterLink :to="projectLink(featured.id)">
+          <RouterLink :to="projectLink(featured.id)" :data-analytics-label="featured.name">
             <img :src="projectImage(featured)" :alt="featured.imageId===originalFeature.imageId ? 'Green interposer board with display connectors and a USB port' : featured.name" />
           </RouterLink>
           <figcaption v-if="featured.imageId===originalFeature.imageId">The interposer board I built to tap the display signals.</figcaption>
@@ -55,7 +55,7 @@ const featureSummary=computed(()=>featured.value?.brief===originalFeature.brief 
           <h2 id="e-feature-title">{{ featured.name }}</h2>
           <p>{{ featureSummary }}</p>
           <p class="e-tech">{{ featureTechnologies }}</p>
-          <RouterLink :to="projectLink(featured.id)" class="e-read-link editorial-action">Read the project notes</RouterLink>
+          <RouterLink :to="projectLink(featured.id)" class="e-read-link editorial-action" data-analytics-label="Read the project notes">Read the project notes</RouterLink>
         </div>
       </section>
 
@@ -64,14 +64,14 @@ const featureSummary=computed(()=>featured.value?.brief===originalFeature.brief 
         <p v-if="token && error" role="alert" class="editor-notice">The latest projects could not be loaded. <button class="editorial-action" @click="refreshProjects">Retry</button></p>
         <p v-if="editError" role="alert" class="editor-notice">{{ editError }}</p>
         <div class="design-filter" aria-label="Filter projects">
-          <button v-for="category in filters" :key="category" :class="{active: filter === category}" :aria-pressed="filter === category" @click="filter = category">{{ category }}</button>
+          <button v-for="category in filters" :key="category" :class="{active: filter === category}" :aria-pressed="filter === category" :data-analytics-label="`Filter: ${category}`" :data-analytics-target="`#filter=${category.toLowerCase()}`" @click="filter = category">{{ category }}</button>
         </div>
         <div class="e-projects">
           <article v-for="project in filtered" :key="project.id" class="e-project">
-            <RouterLink v-if="project.image" :to="projectLink(project.id)" class="e-project-image" tabindex="-1" aria-hidden="true">
+            <RouterLink v-if="project.image" :to="projectLink(project.id)" class="e-project-image" :data-analytics-label="project.name" tabindex="-1" aria-hidden="true">
               <img :src="projectImage(project)" alt="" loading="lazy" />
             </RouterLink>
-            <h3><RouterLink :to="projectLink(project.id)">{{ project.name }}</RouterLink></h3>
+            <h3><RouterLink :to="projectLink(project.id)" :data-analytics-label="project.name">{{ project.name }}</RouterLink></h3>
             <p>{{ project.summary }}</p>
             <div v-if="token" class="editor-controls" data-analytics-ignore>
               <button class="editorial-action" :disabled="!loaded || error || pending" @click="editing={project}">Edit project</button>
@@ -88,7 +88,7 @@ const featureSummary=computed(()=>featured.value?.brief===originalFeature.brief 
         <div>
           <p>I study Computer Science and Mathematics at the University of Toronto. MidnightSky was also a business that supported me through university.</p>
           <p>I also go to hackathons with friends. We made FinHog at HackMIT, Clarify at GenAI, and Seascript at HackThe6ix.</p>
-          <a href="https://github.com/mattlack15" target="_blank" rel="noopener" class="e-read-link editorial-action">GitHub</a>
+          <a href="https://github.com/mattlack15" target="_blank" rel="noopener" class="e-read-link editorial-action" data-analytics-label="GitHub">GitHub</a>
         </div>
       </section>
     </main>
@@ -96,9 +96,9 @@ const featureSummary=computed(()=>featured.value?.brief===originalFeature.brief 
     <footer class="design-footer">
       <span>Matthew Lack</span>
       <div>
-        <a href="/resume.pdf" target="_blank" rel="noopener">Resume</a>
-        <a href="https://github.com/mattlack15" target="_blank" rel="noopener">GitHub</a>
-        <a href="#">Back to top</a>
+        <a href="/resume.pdf" target="_blank" rel="noopener" data-analytics-label="Resume">Resume</a>
+        <a href="https://github.com/mattlack15" target="_blank" rel="noopener" data-analytics-label="GitHub">GitHub</a>
+        <a href="#" data-analytics-label="Back to top">Back to top</a>
         <EditorAccess />
       </div>
     </footer>

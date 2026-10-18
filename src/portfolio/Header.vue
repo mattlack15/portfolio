@@ -7,12 +7,12 @@ const {token} = useEditorAuth();
 </script>
 <template>
   <header class="portfolio-header">
-    <RouterLink to="/" class="portfolio-brand">Matthew Lack</RouterLink>
+    <RouterLink to="/" class="portfolio-brand" data-analytics-label="Matthew Lack">Matthew Lack</RouterLink>
     <nav aria-label="Portfolio">
-      <a v-if="route.name === 'home'" href="#e-work">Projects</a>
-      <RouterLink v-else to="/">All projects</RouterLink>
-      <a v-if="route.name === 'home'" href="#e-about">About</a>
-      <a href="/resume.pdf" target="_blank" rel="noopener">Resume</a>
+      <a v-if="route.name === 'home'" href="#e-work" data-analytics-label="Projects">Projects</a>
+      <RouterLink v-else to="/" data-analytics-label="All projects">All projects</RouterLink>
+      <a v-if="route.name === 'home'" href="#e-about" data-analytics-label="About">About</a>
+      <a href="/resume.pdf" data-analytics-label="Resume" target="_blank" rel="noopener">Resume</a>
       <RouterLink v-if="token" to="/analytics" data-analytics-ignore>Analytics</RouterLink>
       <ThemeToggle />
     </nav>

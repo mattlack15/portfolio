@@ -34,8 +34,9 @@ configuration in `scripts/browser.mjs`. Set `PLAYWRIGHT_MODULE` and
 saves, unsaved drafts, mobile preview, adding, ordering, and deleting projects.
 All API writes in this check are intercepted by browser fixtures.
 
-Run `scripts/test-analytics-browser.cjs` against the development server on port
-5173 for the existing analytics checks.
+Run `scripts/test-analytics-browser.cjs` and `scripts/test-analytics-activity.mjs`
+against the preview server on port 4173 for analytics checks. See `ANALYTICS.md`
+for the API, paging, search, and backend deployment.
 
 ## Deployment
 

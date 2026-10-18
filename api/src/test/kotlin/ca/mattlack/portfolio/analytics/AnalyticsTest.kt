@@ -50,6 +50,8 @@ class AnalyticsTest {
         assertEquals(200, status("POST", "/api/analytics/events"))
         assertEquals(401, status("GET", "/api/analytics/events"))
         assertEquals(401, status("GET", "/api/analytics/summary"))
+        assertEquals(401, status("GET", "/api/analytics/activity"))
+        assertEquals(200, status("GET", "/api/analytics/activity", sessions.create().token))
         assertEquals(200, status("GET", "/api/analytics/summary", sessions.create().token))
     }
 }

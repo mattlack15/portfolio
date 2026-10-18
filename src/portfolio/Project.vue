@@ -21,15 +21,15 @@ watchEffect(()=>{document.title=`${project.value?.name || (!loaded.value?'Loadin
   <div class="portfolio-content project-page">
     <Header />
     <main v-if="project">
-      <div class="project-back"><RouterLink to="/">← Back to projects</RouterLink><button v-if="token" type="button" class="editorial-action" :disabled="!loaded || error" @click="editing=true" data-analytics-ignore>Edit project</button></div>
+      <div class="project-back"><RouterLink to="/" data-analytics-label="Back to projects">← Back to projects</RouterLink><button v-if="token" type="button" class="editorial-action" :disabled="!loaded || error" @click="editing=true" data-analytics-ignore>Edit project</button></div>
       <header class="project-title"><h1>{{ project.name }}</h1><p>{{ project.summary }}</p><ul v-if="project.technologies.length" class="project-stack" aria-label="Project technologies"><li v-for="tech in project.technologies" :key="tech">{{ tech }}</li></ul></header>
       <div v-if="project.image" class="project-cover"><img :src="project.image" :alt="project.name" /></div>
       <article v-if="project.description.trim()" class="portfolio-prose project-prose" v-html="description" />
       <article v-else class="portfolio-prose project-prose"><h2>About this project</h2><p>{{ project.summary }}</p><p>I haven't added a longer writeup for this project yet.</p></article>
-      <RouterLink v-if="next" :to="projectLink(next.id)" class="project-next"><span>Next project</span><strong>{{ next.name }}</strong></RouterLink>
+      <RouterLink v-if="next" :to="projectLink(next.id)" class="project-next" :data-analytics-label="`Next project: ${next.name}`"><span>Next project</span><strong>{{ next.name }}</strong></RouterLink>
     </main>
     <main v-else class="project-missing"><h1>{{ !loaded ? 'Loading project' : error ? 'Project could not be loaded' : 'Project not found' }}</h1><RouterLink to="/">Back to projects</RouterLink></main>
-    <footer class="design-footer"><span>Matthew Lack · Toronto</span><div><RouterLink to="/">All projects</RouterLink><a href="https://github.com/mattlack15" target="_blank" rel="noopener">GitHub</a><EditorAccess /></div></footer>
+    <footer class="design-footer"><span>Matthew Lack · Toronto</span><div><RouterLink to="/" data-analytics-label="All projects">All projects</RouterLink><a href="https://github.com/mattlack15" target="_blank" rel="noopener" data-analytics-label="GitHub">GitHub</a><EditorAccess /></div></footer>
     <ProjectEditor v-if="editing && project" :project="project" @close="editing=false" @saved="editing=false" />
   </div>
 </template>

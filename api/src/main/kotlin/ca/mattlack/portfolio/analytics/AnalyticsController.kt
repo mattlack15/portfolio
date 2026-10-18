@@ -39,6 +39,7 @@ class AnalyticsController(
     fun indexes() {
         collection.createIndex(Document("at", 1), IndexOptions().expireAfter(90L, TimeUnit.DAYS))
         collection.createIndex(Document("type", 1).append("at", 1))
+        collection.createIndex(Document("at", -1).append("_id", -1))
     }
 
     @PostMapping("events")
@@ -57,10 +58,11 @@ class AnalyticsController(
         val ip = clientIp(request)
         if (!allow(ip)) throw ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS)
         val location = geo.locate(ip)
+        val (target, label) = AnalyticsLabels.canonical(cleanTarget(input.target), input.label.take(100), cleanPath(input.path), input.type)
         val event = Document("_id", input.id).append("at", Date())
             .append("visitor", input.visitor).append("session", input.session).append("type", input.type)
-            .append("path", cleanPath(input.path)).append("target", cleanTarget(input.target))
-            .append("label", input.label.take(100)).append("referrer", referrerHost(input.referrer))
+            .append("path", cleanPath(input.path)).append("target", target)
+            .append("label", label).append("referrer", referrerHost(input.referrer))
             .append("country", location["country"].orEmpty()).append("region", location["region"].orEmpty())
             .append("city", location["city"].orEmpty())
         try { collection.insertOne(event) } catch (error: MongoWriteException) {
@@ -105,10 +107,11 @@ class AnalyticsController(
             .append("clicks", ranked(Document("target", "\$target").append("label", "\$label"), "click"))
             .append("referrers", ranked("\$referrer", "pageview"))
             .append("locations", ranked(Document("country", "\$country").append("region", "\$region").append("city", "\$city"), "pageview"))
+            .append("countries", listOf(stage("\$group", Document("_id", "\$country")), stage("\$sort", Document("_id", 1))))
             .append("recent", listOf(stage("\$sort", Document("at", -1)), stage("\$limit", 30),
                 stage("\$project", Document("visitor", 0).append("session", 0))))
         val result = collection.aggregate(listOf(stage("\$match", Document("at", Document("\$gte", Date.from(start)))),
-            stage("\$facet", facets))).maxTime(10, TimeUnit.SECONDS).first() ?: Document()
+            AnalyticsLabels.stage(), stage("\$facet", facets))).maxTime(10, TimeUnit.SECONDS).first() ?: Document()
         val daily = (0 until days).map { offset ->
             val date = today.minusDays((days - 1 - offset).toLong()).toString()
             fun count(type: String): Int = result.getList("daily", Document::class.java).firstOrNull {
@@ -125,6 +128,8 @@ class AnalyticsController(
             "daily" to daily, "pages" to result["pages"], "clicks" to result["clicks"],
             "referrers" to result["referrers"], "locations" to result["locations"], "recent" to result["recent"],
             "geoAvailable" to geo.available, "timezone" to timezone,
+            "countries" to result.getList("countries", Document::class.java).mapNotNull { it.getString("_id") }.filter { it.isNotBlank() },
+            "from" to today.minusDays(days.toLong() - 1).toString(), "to" to today.toString(), "retentionDays" to 90,
         ))
     }
 

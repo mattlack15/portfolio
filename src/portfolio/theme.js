@@ -1,7 +1,8 @@
 import {ref} from 'vue';
 
 const key = 'portfolio-theme';
-const system = window.matchMedia('(prefers-color-scheme: dark)');
+// The prerender has no window; the page's inline script picks the theme before this loads.
+const system = import.meta.env.SSR ? {matches:false} : window.matchMedia('(prefers-color-scheme: dark)');
 const readPreference = () => {
   try {
     const value = localStorage.getItem(key);
@@ -14,19 +15,21 @@ export const theme = ref(preference || (system.matches ? 'dark' : 'light'));
 function apply() {
   document.documentElement.dataset.portfolioTheme = theme.value;
 }
-apply();
-system.addEventListener('change', event => {
-  if (!preference) {
-    theme.value = event.matches ? 'dark' : 'light';
-    apply();
-  }
-});
-window.addEventListener('storage', event => {
-  if (event.key !== key && event.key !== null) return;
-  preference = readPreference();
-  theme.value = preference || (system.matches ? 'dark' : 'light');
+if (!import.meta.env.SSR) {
   apply();
-});
+  system.addEventListener('change', event => {
+    if (!preference) {
+      theme.value = event.matches ? 'dark' : 'light';
+      apply();
+    }
+  });
+  window.addEventListener('storage', event => {
+    if (event.key !== key && event.key !== null) return;
+    preference = readPreference();
+    theme.value = preference || (system.matches ? 'dark' : 'light');
+    apply();
+  });
+}
 
 export function toggleTheme() {
   theme.value = theme.value === 'dark' ? 'light' : 'dark';

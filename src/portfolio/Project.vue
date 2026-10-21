@@ -1,11 +1,12 @@
 <script setup>
-import {computed, defineAsyncComponent, ref, watch, watchEffect} from 'vue';
+import {computed, defineAsyncComponent, ref, watch} from 'vue';
 import {useRoute} from 'vue-router';
 import Header from './Header.vue';
 import EditorAccess from './EditorAccess.vue';
 import {useEditorAuth} from '@/auth/editor';
 import {usePortfolio} from './projects';
 import {renderMarkdown} from './markdown';
+import {notFoundMeta, projectMeta, usePageMeta} from './meta';
 defineProps({authToken:{type:String,default:null}});
 const ProjectEditor=defineAsyncComponent(()=>import('./ProjectEditor.vue'));
 const route=useRoute();const {token}=useEditorAuth();
@@ -15,7 +16,7 @@ const next=computed(()=>projects.value[(projects.value.findIndex(p=>p.id===route
 const description=computed(()=>renderMarkdown(project.value?.description));
 const editing=ref(false);
 watch(()=>route.params.id,()=>{editing.value=false;});
-watchEffect(()=>{document.title=`${project.value?.name || (!loaded.value?'Loading project':'Project not found')} | Matthew Lack`;});
+usePageMeta(()=>project.value?projectMeta(project.value):notFoundMeta(!loaded.value?'Loading project':'Project not found'));
 </script>
 <template>
   <div class="portfolio-content project-page">

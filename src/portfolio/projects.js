@@ -52,6 +52,7 @@ export async function uploadImage(file) {
   const response = await authorized('/api/images/upload',{method:'POST',body:form});
   return String(await response.json());
 }
+export function setProjects(data) { projects.value = prepareProjects(data,true); return projects.value; }
 export function usePortfolio() {
   onMounted(refreshProjects);
   return {projects:readonly(projects), loaded:readonly(loaded), error:readonly(error), projectLink, refreshProjects};

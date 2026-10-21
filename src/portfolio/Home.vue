@@ -1,6 +1,7 @@
 <script setup>
-import {computed, defineAsyncComponent, ref, watchEffect} from 'vue';
+import {computed, defineAsyncComponent, ref} from 'vue';
 import {categories} from './content';
+import {homeMeta, usePageMeta} from './meta';
 import snapshot from './projects.json';
 import {usePortfolio} from './projects';
 import Header from './Header.vue';
@@ -11,7 +12,7 @@ const ProjectEditor=defineAsyncComponent(()=>import('./ProjectEditor.vue'));
 defineProps({authToken:{type:String,default:null}});
 const {token}=useEditorAuth();
 const editing=ref(null);const editError=ref('');const pending=ref(false);
-watchEffect(()=>{document.title='Matthew Lack';});
+usePageMeta(homeMeta);
 
 const {projects, projectLink, loaded, error, refreshProjects} = usePortfolio();
 async function move(id,amount) { pending.value=true;editError.value='';try { await moveProject(id,amount); }catch(e){ editError.value=e.message; }finally { pending.value=false; } }

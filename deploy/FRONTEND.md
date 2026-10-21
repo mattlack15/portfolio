@@ -22,9 +22,24 @@ The theme switch follows the system preference until the visitor chooses a mode.
 That choice is saved under `portfolio-theme` in local storage, applies to project
 pages, and stays in sync between tabs.
 
+## Search engines
+
+`npm run build` also prerenders the homepage and every project page with
+`scripts/prerender.mjs`. It renders the same Vue components on the server build in
+`dist-ssr`, using the live projects from `https://mattlack.com/api/projects/list`
+(set `PRERENDER_API` to change it, or to an empty value to use the snapshot). Each
+page gets its own title, description, canonical link, and Open Graph tags, and
+project pages are written to `dist/project/<id>/index.html`. The build also writes
+`robots.txt` and `sitemap.xml`. Projects added or edited on the site appear in the
+prerendered HTML and sitemap after the next build and deploy; until then the app
+still renders them in the browser. Unknown addresses show a Page not found view,
+and not-found, missing-project, and analytics pages are marked `noindex`.
+
 ## Build and check
 
 Run `npm run build`, then serve the build on port 4173 with `npm run preview`.
+The preview server falls back to the homepage for project addresses without a
+trailing slash; nginx serves the prerendered project file.
 `scripts/test-portfolio-browser.mjs` checks both themes at four widths, navigation,
 project updates, editor access, and preference persistence. It uses the browser
 configuration in `scripts/browser.mjs`. Set `PLAYWRIGHT_MODULE` and
@@ -48,8 +63,9 @@ Upload the completed build into `/home/ubuntu/portfolio/releases/<commit>`.
 Before publishing, copy the current `dist` directory into
 `/home/ubuntu/portfolio/releases/<commit>-previous`.
 
-Copy the new release files into `dist`, excluding `index.html`, and retain old
-hashed assets. Publish `index.html` last with an atomic rename. This keeps the
+Copy the new release files into `dist`, excluding the root `index.html`, and retain old
+hashed assets. Prerendered project pages, `robots.txt`, and `sitemap.xml` are copied
+in this step. Publish `index.html` last with an atomic rename. This keeps the
 current frontend usable during the upload and leaves assets available to visitors
 with an older page open. Do not replace the server's Git checkout, which contains
 local backend work.

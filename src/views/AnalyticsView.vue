@@ -6,8 +6,9 @@ import EditorIcon from '@/components/EditorIcon.vue';
 import EditorAccess from '@/portfolio/EditorAccess.vue';
 import {useEditorAuth} from '@/auth/editor';
 import AnalyticsActivity from '@/portfolio/AnalyticsActivity.vue';
+import {notFoundMeta, usePageMeta} from '@/portfolio/meta';
 const {signIn,lock}=useEditorAuth();
-document.title='Analytics | Matthew Lack';
+usePageMeta(()=>notFoundMeta('Analytics'));
 
 const props = defineProps({authToken: {type: String, default: null}});
 let savedDays;

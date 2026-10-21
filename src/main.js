@@ -8,4 +8,5 @@ installAnalytics(router)
 
 const app = createApp(App)
 app.use(router)
-app.mount('#app')
+// Replace the prerendered page only once its route is loaded, so it never flashes blank.
+router.isReady().finally(()=>app.mount('#app'))
